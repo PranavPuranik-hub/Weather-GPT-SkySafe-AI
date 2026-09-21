@@ -26,7 +26,7 @@ services:
     container_name: skysafe-backend
     restart: always
     ports:
-      - "0.0.0.0:8000:8000"
+      - "0.0.0.0:8001:8000"
     environment:
       DATABASE_URL: postgresql://skysafe:skysafe@postgres:5432/skysafe
       LLM_PROVIDER: ${LLM_PROVIDER:-null}
