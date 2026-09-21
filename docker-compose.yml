@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgis/postgis:15-3.3
+    container_name: skysafe-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: skysafe
+      POSTGRES_USER: skysafe
+      POSTGRES_PASSWORD: skysafe
+    ports:
+      - "0.0.0.0:5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U skysafe -d skysafe"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: skysafe-backend
+    restart: always
+    ports:
+      - "0.0.0.0:8000:8000"
+    environment:
+      DATABASE_URL: postgresql://skysafe:skysafe@postgres:5432/skysafe
+      LLM_PROVIDER: ${LLM_PROVIDER:-null}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      OLLAMA_URL: ${OLLAMA_URL:-http://ollama:11434}
+      MODE: ${MODE:-fixtures}
+      DEMO_DISTRICT: ${DEMO_DISTRICT:-Cuttack}
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID:-}
+      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN:-}
+      TWILIO_PHONE_NUMBER: ${TWILIO_PHONE_NUMBER:-}
+      SARVAM_API_KEY: ${SARVAM_API_KEY:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./data:/app/data
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: skysafe-frontend
+    restart: always
+    ports:
+      - "0.0.0.0:3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:8000
+    depends_on:
+      - backend
+
+  ollama:
+    profiles: ["llm"]
+    image: ollama/ollama:latest
+    container_name: skysafe-ollama
+    restart: always
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
+volumes:
+  postgres_data:
+  ollama_data:
