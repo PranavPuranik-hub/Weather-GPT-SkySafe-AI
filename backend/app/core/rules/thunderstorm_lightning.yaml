@@ -1,0 +1,211 @@
+hazard: thunderstorm_lightning
+rules:
+  # Grade A (Act Now / Evacuate)
+  - grade: A
+    persona: general
+    actions:
+      - id: ACT-TS-A-GEN-01
+        template: "Take immediate shelter inside a permanent pucca building in {area}."
+        fact_fields: ["area"]
+      - id: ACT-TS-A-GEN-02
+        template: "Do not stand under tall isolated trees, electric poles, or near metal fences during lightning strikes."
+        fact_fields: []
+      - id: ACT-TS-A-GEN-03
+        template: "Unplug electrical appliances and avoid using corded phones or touch metal plumbing."
+        fact_fields: []
+
+  - grade: A
+    persona: farmer
+    actions:
+      - id: ACT-TS-A-FARM-01
+        template: "Suspend all field work immediately and move away from open fields in {area}."
+        fact_fields: ["area"]
+      - id: ACT-TS-A-FARM-02
+        template: "Untether cattle from iron poles or trees and move them into dry sheltered sheds."
+        fact_fields: []
+      - id: ACT-TS-A-FARM-03
+        template: "Avoid riding tractors, metal harvesters, or holding metal tools."
+        fact_fields: []
+
+  - grade: A
+    persona: fisherman
+    actions:
+      - id: ACT-TS-A-FISH-01
+        template: "UNSAFE: Frequent cloud-to-ground lightning strikes and squall winds of {wind_speed_kmh} km/h. Get off water immediately."
+        fact_fields: ["wind_speed_kmh"]
+      - id: ACT-TS-A-FISH-02
+        template: "Return boat to shore and avoid standing on open beach or near metal boat masts."
+        fact_fields: []
+
+  - grade: A
+    persona: elderly_alone
+    actions:
+      - id: ACT-TS-A-ELD-01
+        template: "Stay inside closed house away from windows and doors in {area}."
+        fact_fields: ["area"]
+      - id: ACT-TS-A-ELD-02
+        template: "Keep battery radio and torch light ready; do not touch metal radio antennas."
+        fact_fields: []
+
+  - grade: A
+    persona: pregnant_infants
+    actions:
+      - id: ACT-TS-A-PREG-01
+        template: "Keep pregnant women and infants safely inside the innermost room of concrete building in {area}."
+        fact_fields: ["area"]
+      - id: ACT-TS-A-PREG-02
+        template: "Avoid water contact like bathing or washing dishes during thunderstorm activity."
+        fact_fields: []
+
+  # Grade B (Prepare to Act)
+  - grade: B
+    persona: general
+    actions:
+      - id: ACT-TS-B-GEN-01
+        template: "Prepare for severe thunderstorm and lightning in {area}."
+        fact_fields: ["area"]
+      - id: ACT-TS-B-GEN-02
+        template: "Secure loose outdoor objects before gusty squalls."
+        fact_fields: []
+
+  - grade: B
+    persona: farmer
+    actions:
+      - id: ACT-TS-B-FARM-01
+        template: "Guide livestock back to farm building in {area}."
+        fact_fields: ["area"]
+      - id: ACT-TS-B-FARM-02
+        template: "Park farm machinery under cover away from high trees."
+        fact_fields: []
+
+  - grade: B
+    persona: fisherman
+    actions:
+      - id: ACT-TS-B-FISH-01
+        template: "UNSAFE: Thunderstorm clouds approaching coast. Suspend boat launch in {area}."
+        fact_fields: ["area"]
+      - id: ACT-TS-B-FISH-02
+        template: "Monitor dark convective clouds."
+        fact_fields: []
+
+  - grade: B
+    persona: elderly_alone
+    actions:
+      - id: ACT-TS-B-ELD-01
+        template: "Move indoors before thunder starts in {area}."
+        fact_fields: ["area"]
+      - id: ACT-TS-B-ELD-02
+        template: "Keep mobile phone charged."
+        fact_fields: []
+
+  - grade: B
+    persona: pregnant_infants
+    actions:
+      - id: ACT-TS-B-PREG-01
+        template: "Ensure safe indoor shelter in {area}."
+        fact_fields: ["area"]
+      - id: ACT-TS-B-PREG-02
+        template: "Keep emergency medical folder ready."
+        fact_fields: []
+
+  # Grade C (Stay Alert)
+  - grade: C
+    persona: general
+    actions:
+      - id: ACT-TS-C-GEN-01
+        template: "Watch sky for thunder clouds in {area}."
+        fact_fields: ["area"]
+      - id: ACT-TS-C-GEN-02
+        template: "Keep emergency helpline numbers saved."
+        fact_fields: []
+
+  - grade: C
+    persona: farmer
+    actions:
+      - id: ACT-TS-C-FARM-01
+        template: "Stay alert during field activities in {area}."
+        fact_fields: ["area"]
+      - id: ACT-TS-C-FARM-02
+        template: "Keep cattle tethered near shelter."
+        fact_fields: []
+
+  - grade: C
+    persona: fisherman
+    actions:
+      - id: ACT-TS-C-FISH-01
+        template: "SAFE: Moderate sea state. Keep watch for sudden wind shifts in {area}."
+        fact_fields: ["area"]
+      - id: ACT-TS-C-FISH-02
+        template: "Wear life jackets."
+        fact_fields: []
+
+  - grade: C
+    persona: elderly_alone
+    actions:
+      - id: ACT-TS-C-ELD-01
+        template: "Stay alert for weather updates in {area}."
+        fact_fields: ["area"]
+      - id: ACT-TS-C-ELD-02
+        template: "Keep flashlights handy."
+        fact_fields: []
+
+  - grade: C
+    persona: pregnant_infants
+    actions:
+      - id: ACT-TS-C-PREG-01
+        template: "Remain indoors if skies darken in {area}."
+        fact_fields: ["area"]
+      - id: ACT-TS-C-PREG-02
+        template: "Maintain routine health care."
+        fact_fields: []
+
+  # Grade D (Information Only)
+  - grade: D
+    persona: general
+    actions:
+      - id: ACT-TS-D-GEN-01
+        template: "Routine weather advisory for {area}."
+        fact_fields: ["area"]
+      - id: ACT-TS-D-GEN-02
+        template: "Normal activities."
+        fact_fields: []
+
+  - grade: D
+    persona: farmer
+    actions:
+      - id: ACT-TS-D-FARM-01
+        template: "Normal field activities in {area}."
+        fact_fields: ["area"]
+      - id: ACT-TS-D-FARM-02
+        template: "Standard farm routine."
+        fact_fields: []
+
+  - grade: D
+    persona: fisherman
+    actions:
+      - id: ACT-TS-D-FISH-01
+        template: "SAFE: Normal marine conditions in {area}."
+        fact_fields: ["area"]
+      - id: ACT-TS-D-FISH-02
+        template: "Standard navigation guidelines."
+        fact_fields: []
+
+  - grade: D
+    persona: elderly_alone
+    actions:
+      - id: ACT-TS-D-ELD-01
+        template: "Normal daily routine in {area}."
+        fact_fields: ["area"]
+      - id: ACT-TS-D-ELD-02
+        template: "Maintain regular care."
+        fact_fields: []
+
+  - grade: D
+    persona: pregnant_infants
+    actions:
+      - id: ACT-TS-D-PREG-01
+        template: "Normal routine in {area}."
+        fact_fields: ["area"]
+      - id: ACT-TS-D-PREG-02
+        template: "Maintain standard prenatal routine."
+        fact_fields: []

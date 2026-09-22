@@ -22,3 +22,7 @@
 - **Decision**: Primary ingestion queries NDMA SACHET RSS, with automatic fallback and secondary redundancy from IMD RSS. Offline demo uses `/data/fixtures/cap/*.xml`. Geometry is parsed from `<polygon>` coordinates and stored as standardized GeoJSON in a `geometry` column, ensuring 100% interoperability across PostGIS in production and SQLite in automated testing.
 - **Consequences**: Zero ingestion downtime, honest alert-to-ingest lag tracking, fully functional offline demo mode.
 
+### ADR 005: Zero-LLM Grounded Action Engine
+- **Context**: The action intelligence layer must provide life-saving, deterministic advice that works when LLMs are disabled or offline, without hallucination risk.
+- **Decision**: Implemented `backend/app/core/` containing an immutable `FactSheet` builder (with regex span extraction for wind, waves, rainfall, and temperature), a deterministic `GradeEngine` mapping alert attributes to threat Grades A-D, declarative YAML rules for 5 hazards x 5 personas, and full `why` fact ID traceability.
+- **Consequences**: 100% deterministic grounding, zero LLM dependency for core decision making, full offline capability for emergency response.

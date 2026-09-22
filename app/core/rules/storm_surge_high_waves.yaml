@@ -1,0 +1,214 @@
+hazard: storm_surge_high_waves
+rules:
+  # Grade A (Act Now / Evacuate)
+  - grade: A
+    persona: general
+    actions:
+      - id: ACT-SS-A-GEN-01
+        template: "Evacuate coastal lowlands in {area} immediately due to dangerous swell waves of {wave_height_m} m."
+        fact_fields: ["area", "wave_height_m"]
+      - id: ACT-SS-A-GEN-02
+        template: "Do not visit beaches, coastal promenades, or rocky sea walls."
+        fact_fields: []
+      - id: ACT-SS-A-GEN-03
+        template: "Move to elevated cyclone/storm surge shelters at least 1 km inland."
+        fact_fields: []
+
+  - grade: A
+    persona: farmer
+    actions:
+      - id: ACT-SS-A-FARM-01
+        template: "Move coastal farm animals and pumps inland in {area} to protect from saline seawater inundation."
+        fact_fields: ["area"]
+      - id: ACT-SS-A-FARM-02
+        template: "Secure farm inputs and fertilizers in high waterproof storage."
+        fact_fields: []
+      - id: ACT-SS-A-FARM-03
+        template: "Create earthen embankments around coastal prawn/aquaculture ponds."
+        fact_fields: []
+
+  - grade: A
+    persona: fisherman
+    actions:
+      - id: ACT-SS-A-FISH-01
+        template: "UNSAFE: Swell wave heights of {wave_height_m} m and rough sea surge. Total prohibition on going to sea."
+        fact_fields: ["wave_height_m"]
+      - id: ACT-SS-A-FISH-02
+        template: "Haul all catamarans, mechanised boats, and trawlers above high-water spring tide mark."
+        fact_fields: []
+      - id: ACT-SS-A-FISH-03
+        template: "Remove outboard motors, fishing nets, and electronic nav devices to inland storage."
+        fact_fields: []
+
+  - grade: A
+    persona: elderly_alone
+    actions:
+      - id: ACT-SS-A-ELD-01
+        template: "Evacuate early with coastal relief team in {area} before high-tide sea surge."
+        fact_fields: ["area"]
+      - id: ACT-SS-A-ELD-02
+        template: "Carry essential medications, warm shawl, and flashlight in waterproof pouch."
+        fact_fields: []
+
+  - grade: A
+    persona: pregnant_infants
+    actions:
+      - id: ACT-SS-A-PREG-01
+        template: "Transfer pregnant women and infants to inland health facility in {area} immediately."
+        fact_fields: ["area"]
+      - id: ACT-SS-A-PREG-02
+        template: "Pack infant food, clean water bottles, and hygiene kit."
+        fact_fields: []
+
+  # Grade B (Prepare to Act)
+  - grade: B
+    persona: general
+    actions:
+      - id: ACT-SS-B-GEN-01
+        template: "Prepare for coastal sea surge and high swell waves in {area}."
+        fact_fields: ["area"]
+      - id: ACT-SS-B-GEN-02
+        template: "Secure coastal household items and pack emergency kit."
+        fact_fields: []
+
+  - grade: B
+    persona: farmer
+    actions:
+      - id: ACT-SS-B-FARM-01
+        template: "Protect coastal aquaculture ponds and crop bunds in {area}."
+        fact_fields: ["area"]
+      - id: ACT-SS-B-FARM-02
+        template: "Move portable farm equipment inland."
+        fact_fields: []
+
+  - grade: B
+    persona: fisherman
+    actions:
+      - id: ACT-SS-B-FISH-01
+        template: "UNSAFE: High wave warning with wave height {wave_height_m} m. Do not venture into sea."
+        fact_fields: ["wave_height_m"]
+      - id: ACT-SS-B-FISH-02
+        template: "Double-tie boat moorings in harbour."
+        fact_fields: []
+
+  - grade: B
+    persona: elderly_alone
+    actions:
+      - id: ACT-SS-B-ELD-01
+        template: "Prepare for early coastal relocation in {area}."
+        fact_fields: ["area"]
+      - id: ACT-SS-B-ELD-02
+        template: "Keep emergency contact numbers handy."
+        fact_fields: []
+
+  - grade: B
+    persona: pregnant_infants
+    actions:
+      - id: ACT-SS-B-PREG-01
+        template: "Arrange early transport away from coastal strip in {area}."
+        fact_fields: ["area"]
+      - id: ACT-SS-B-PREG-02
+        template: "Keep medical records ready."
+        fact_fields: []
+
+  # Grade C (Stay Alert)
+  - grade: C
+    persona: general
+    actions:
+      - id: ACT-SS-C-GEN-01
+        template: "Stay alert for ocean wave advisories in {area}."
+        fact_fields: ["area"]
+      - id: ACT-SS-C-GEN-02
+        template: "Avoid water sports and beach walking."
+        fact_fields: []
+
+  - grade: C
+    persona: farmer
+    actions:
+      - id: ACT-SS-C-FARM-01
+        template: "Monitor coastal saline embankment status in {area}."
+        fact_fields: ["area"]
+      - id: ACT-SS-C-FARM-02
+        template: "Keep livestock tethered on higher ground."
+        fact_fields: []
+
+  - grade: C
+    persona: fisherman
+    actions:
+      - id: ACT-SS-C-FISH-01
+        template: "SAFE: Moderate sea wave height {wave_height_m} m. Exercise caution during coastal fishing."
+        fact_fields: ["wave_height_m"]
+      - id: ACT-SS-C-FISH-02
+        template: "Inspect boat safety gear."
+        fact_fields: []
+
+  - grade: C
+    persona: elderly_alone
+    actions:
+      - id: ACT-SS-C-ELD-01
+        template: "Stay informed of high tide timings in {area}."
+        fact_fields: ["area"]
+      - id: ACT-SS-C-ELD-02
+        template: "Keep flashlight accessible."
+        fact_fields: []
+
+  - grade: C
+    persona: pregnant_infants
+    actions:
+      - id: ACT-SS-C-PREG-01
+        template: "Avoid visiting beach areas in {area}."
+        fact_fields: ["area"]
+      - id: ACT-SS-C-PREG-02
+        template: "Maintain regular care."
+        fact_fields: []
+
+  # Grade D (Information Only)
+  - grade: D
+    persona: general
+    actions:
+      - id: ACT-SS-D-GEN-01
+        template: "Normal ocean state advisory for {area}."
+        fact_fields: ["area"]
+      - id: ACT-SS-D-GEN-02
+        template: "Routine coastal activities."
+        fact_fields: []
+
+  - grade: D
+    persona: farmer
+    actions:
+      - id: ACT-SS-D-FARM-01
+        template: "Normal farming in coastal district {area}."
+        fact_fields: ["area"]
+      - id: ACT-SS-D-FARM-02
+        template: "Standard farm routine."
+        fact_fields: []
+
+  - grade: D
+    persona: fisherman
+    actions:
+      - id: ACT-SS-D-FISH-01
+        template: "SAFE: Normal sea conditions in {area}."
+        fact_fields: ["area"]
+      - id: ACT-SS-D-FISH-02
+        template: "Standard navigation rules apply."
+        fact_fields: []
+
+  - grade: D
+    persona: elderly_alone
+    actions:
+      - id: ACT-SS-D-ELD-01
+        template: "Normal routine in {area}."
+        fact_fields: ["area"]
+      - id: ACT-SS-D-ELD-02
+        template: "Regular health routine."
+        fact_fields: []
+
+  - grade: D
+    persona: pregnant_infants
+    actions:
+      - id: ACT-SS-D-PREG-01
+        template: "Normal prenatal routine in {area}."
+        fact_fields: ["area"]
+      - id: ACT-SS-D-PREG-02
+        template: "Standard healthcare."
+        fact_fields: []

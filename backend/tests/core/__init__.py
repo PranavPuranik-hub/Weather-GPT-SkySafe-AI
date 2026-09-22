@@ -1,0 +1,3 @@
+"""
+Core intelligence unit tests.
+"""

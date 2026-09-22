@@ -1,0 +1,220 @@
+hazard: cyclone
+rules:
+  # Grade A (Act Now / Evacuate)
+  - grade: A
+    persona: general
+    actions:
+      - id: ACT-CYC-A-GEN-01
+        template: "Evacuate kutcha houses in {area} immediately and move to designated concrete cyclone shelters."
+        fact_fields: ["area"]
+      - id: ACT-CYC-A-GEN-02
+        template: "Disconnect electricity mains and gas cylinders before evacuating."
+        fact_fields: []
+      - id: ACT-CYC-A-GEN-03
+        template: "Do not venture outdoors during calm eye passage as destructive gale winds of {wind_gust_kmh} km/h will resume suddenly."
+        fact_fields: ["wind_gust_kmh"]
+
+  - grade: A
+    persona: farmer
+    actions:
+      - id: ACT-CYC-A-FARM-01
+        template: "Move livestock to elevated pucca shelters immediately in {area}."
+        fact_fields: ["area"]
+      - id: ACT-CYC-A-FARM-02
+        template: "Turn off electric irrigation pumps and secure loose farm equipment against {wind_speed_kmh} km/h winds."
+        fact_fields: ["wind_speed_kmh"]
+      - id: ACT-CYC-A-FARM-03
+        template: "Store harvested grains on elevated platforms covered with waterproof tarpaulins."
+        fact_fields: []
+
+  - grade: A
+    persona: fisherman
+    actions:
+      - id: ACT-CYC-A-FISH-01
+        template: "UNSAFE: Severe gale winds of {wind_speed_kmh} km/h and wave heights of {wave_height_m} m forecast. Total ban on sea venture."
+        fact_fields: ["wind_speed_kmh", "wave_height_m"]
+      - id: ACT-CYC-A-FISH-02
+        template: "Return to nearest harbour immediately and secure boats with double moorings above high-tide line."
+        fact_fields: []
+      - id: ACT-CYC-A-FISH-03
+        template: "Move fishing nets, outboard motors, and GPS gear to safe inland storage."
+        fact_fields: []
+
+  - grade: A
+    persona: elderly_alone
+    actions:
+      - id: ACT-CYC-A-ELD-01
+        template: "Evacuate early with pre-arranged helper to the central cyclone shelter in {area} before {onset}."
+        fact_fields: ["area", "onset"]
+      - id: ACT-CYC-A-ELD-02
+        template: "Pack a 3-day supply of essential medicines, medical prescriptions, and emergency torch light."
+        fact_fields: []
+      - id: ACT-CYC-A-ELD-03
+        template: "Keep emergency helpline contacts and family phone numbers written on paper."
+        fact_fields: []
+
+  - grade: A
+    persona: pregnant_infants
+    actions:
+      - id: ACT-CYC-A-PREG-01
+        template: "Transport expectant mothers and infants to nearest Primary Health Centre or hospital in {area} immediately."
+        fact_fields: ["area"]
+      - id: ACT-CYC-A-PREG-02
+        template: "Pack emergency maternal healthcare kit, clean water, baby milk formula, and dry clothes."
+        fact_fields: []
+      - id: ACT-CYC-A-PREG-03
+        template: "Ensure ambulance or accredited social health activist (ASHA) transport is pre-booked."
+        fact_fields: []
+
+  # Grade B (Prepare to Act)
+  - grade: B
+    persona: general
+    actions:
+      - id: ACT-CYC-B-GEN-01
+        template: "Inspect house roof and trim overhanging tree branches in {area}."
+        fact_fields: ["area"]
+      - id: ACT-CYC-B-GEN-02
+        template: "Prepare emergency kit with dry food, battery radio, and solar lamp before expected winds of {wind_speed_kmh} km/h."
+        fact_fields: ["wind_speed_kmh"]
+
+  - grade: B
+    persona: farmer
+    actions:
+      - id: ACT-CYC-B-FARM-01
+        template: "Accelerate harvest of mature crops in {area} and move to dry storage."
+        fact_fields: ["area"]
+      - id: ACT-CYC-B-FARM-02
+        template: "Provide drainage channels in standing crop fields to drain excess water."
+        fact_fields: []
+
+  - grade: B
+    persona: fisherman
+    actions:
+      - id: ACT-CYC-B-FISH-01
+        template: "UNSAFE: Rough sea conditions expected with wave heights of {wave_height_m} m. Do not venture into deep sea."
+        fact_fields: ["wave_height_m"]
+      - id: ACT-CYC-B-FISH-02
+        template: "Keep communication radios charged and stay tuned to coastal weather bulletins."
+        fact_fields: []
+
+  - grade: B
+    persona: elderly_alone
+    actions:
+      - id: ACT-CYC-B-ELD-01
+        template: "Contact local community volunteer for evacuation assistance in {area}."
+        fact_fields: ["area"]
+      - id: ACT-CYC-B-ELD-02
+        template: "Charge mobile phone and power bank fully."
+        fact_fields: []
+
+  - grade: B
+    persona: pregnant_infants
+    actions:
+      - id: ACT-CYC-B-PREG-01
+        template: "Inform ASHA worker and pre-arrange vehicle for hospital transport in {area}."
+        fact_fields: ["area"]
+      - id: ACT-CYC-B-PREG-02
+        template: "Keep medical records and infant care supplies packed in waterproof bag."
+        fact_fields: []
+
+  # Grade C (Stay Alert)
+  - grade: C
+    persona: general
+    actions:
+      - id: ACT-CYC-C-GEN-01
+        template: "Track official IMD cyclone bulletins for updates in {area}."
+        fact_fields: ["area"]
+      - id: ACT-CYC-C-GEN-02
+        template: "Keep emergency food and water stocks replenished."
+        fact_fields: []
+
+  - grade: C
+    persona: farmer
+    actions:
+      - id: ACT-CYC-C-FARM-01
+        template: "Check cattle shelter roof and secure tarpaulins in {area}."
+        fact_fields: ["area"]
+      - id: ACT-CYC-C-FARM-02
+        template: "Postpone fresh fertilizer application in crop fields."
+        fact_fields: []
+
+  - grade: C
+    persona: fisherman
+    actions:
+      - id: ACT-CYC-C-FISH-01
+        template: "SAFE: Sea conditions current wave height {wave_height_m} m. Exercise caution during coastal fishing."
+        fact_fields: ["wave_height_m"]
+      - id: ACT-CYC-C-FISH-02
+        template: "Inspect life jackets and distress flares before leaving harbour."
+        fact_fields: []
+
+  - grade: C
+    persona: elderly_alone
+    actions:
+      - id: ACT-CYC-C-ELD-01
+        template: "Confirm neighbor check-in schedule in {area}."
+        fact_fields: ["area"]
+      - id: ACT-CYC-C-ELD-02
+        template: "Keep flashlights and battery backup readily accessible."
+        fact_fields: []
+
+  - grade: C
+    persona: pregnant_infants
+    actions:
+      - id: ACT-CYC-C-PREG-01
+        template: "Review emergency hospital route in {area}."
+        fact_fields: ["area"]
+      - id: ACT-CYC-C-PREG-02
+        template: "Ensure adequate infant nutrition and clean drinking water."
+        fact_fields: []
+
+  # Grade D (Information Only)
+  - grade: D
+    persona: general
+    actions:
+      - id: ACT-CYC-D-GEN-01
+        template: "Routine cyclone advisory active for {area}. Normal activities may continue."
+        fact_fields: ["area"]
+      - id: ACT-CYC-D-GEN-02
+        template: "Monitor local weather news periodically."
+        fact_fields: []
+
+  - grade: D
+    persona: farmer
+    actions:
+      - id: ACT-CYC-D-FARM-01
+        template: "Normal farming operations in {area}. Stay informed of seasonal outlook."
+        fact_fields: ["area"]
+      - id: ACT-CYC-D-FARM-02
+        template: "Maintain farm drainage pathways."
+        fact_fields: []
+
+  - grade: D
+    persona: fisherman
+    actions:
+      - id: ACT-CYC-D-FISH-01
+        template: "SAFE: Sea state normal in {area}. Standard navigation guidelines apply."
+        fact_fields: ["area"]
+      - id: ACT-CYC-D-FISH-02
+        template: "Maintain standard marine safety equipment."
+        fact_fields: []
+
+  - grade: D
+    persona: elderly_alone
+    actions:
+      - id: ACT-CYC-D-ELD-01
+        template: "Normal daily routine in {area}. Keep phone charged."
+        fact_fields: ["area"]
+      - id: ACT-CYC-D-ELD-02
+        template: "Store regular health medications."
+        fact_fields: []
+
+  - grade: D
+    persona: pregnant_infants
+    actions:
+      - id: ACT-CYC-D-PREG-01
+        template: "Normal healthcare routine in {area}. Keep antenatal appointments."
+        fact_fields: ["area"]
+      - id: ACT-CYC-D-PREG-02
+        template: "Maintain routine health records."
+        fact_fields: []

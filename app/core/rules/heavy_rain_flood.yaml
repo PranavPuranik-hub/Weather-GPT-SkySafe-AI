@@ -1,0 +1,211 @@
+hazard: heavy_rain_flood
+rules:
+  # Grade A (Act Now / Evacuate)
+  - grade: A
+    persona: general
+    actions:
+      - id: ACT-FL-A-GEN-01
+        template: "Evacuate low-lying inundated houses in {area} immediately due to extreme rainfall of {rainfall_mm} mm."
+        fact_fields: ["area", "rainfall_mm"]
+      - id: ACT-FL-A-GEN-02
+        template: "Do not attempt to walk, swim, or drive through flowing floodwaters."
+        fact_fields: []
+      - id: ACT-FL-A-GEN-03
+        template: "Move to upper floors or designated flood relief shelters on elevated ground."
+        fact_fields: []
+
+  - grade: A
+    persona: farmer
+    actions:
+      - id: ACT-FL-A-FARM-01
+        template: "Move cattle and farm animals immediately to high embankment shelters in {area}."
+        fact_fields: ["area"]
+      - id: ACT-FL-A-FARM-02
+        template: "Turn off electric tube-wells and submersibles to avoid electrical short circuits."
+        fact_fields: []
+      - id: ACT-FL-A-FARM-03
+        template: "Open farm bund gates to allow rapid runoff from submerged fields."
+        fact_fields: []
+
+  - grade: A
+    persona: fisherman
+    actions:
+      - id: ACT-FL-A-FISH-01
+        template: "UNSAFE: Swollen river discharge of {river_discharge_m3s} m³/s and turbulent runoff. Do not operate boats."
+        fact_fields: ["river_discharge_m3s"]
+      - id: ACT-FL-A-FISH-02
+        template: "Secure boats with strong ropes above flood overflow levels."
+        fact_fields: []
+
+  - grade: A
+    persona: elderly_alone
+    actions:
+      - id: ACT-FL-A-ELD-01
+        template: "Evacuate early with community volunteers in {area} before water level cuts off access road."
+        fact_fields: ["area"]
+      - id: ACT-FL-A-ELD-02
+        template: "Keep essential chronic illness medicines and drinking water in a waterproof bag."
+        fact_fields: []
+
+  - grade: A
+    persona: pregnant_infants
+    actions:
+      - id: ACT-FL-A-PREG-01
+        template: "Shift pregnant women and newborn infants to high-ground PHC or hospital in {area} immediately."
+        fact_fields: ["area"]
+      - id: ACT-FL-A-PREG-02
+        template: "Ensure boil-water advisories are followed for infant food preparation."
+        fact_fields: []
+
+  # Grade B (Prepare to Act)
+  - grade: B
+    persona: general
+    actions:
+      - id: ACT-FL-B-GEN-01
+        template: "Prepare for potential flash flooding in {area} with expected rainfall of {rainfall_mm} mm."
+        fact_fields: ["area", "rainfall_mm"]
+      - id: ACT-FL-B-GEN-02
+        template: "Store clean drinking water and non-perishable food."
+        fact_fields: []
+
+  - grade: B
+    persona: farmer
+    actions:
+      - id: ACT-FL-B-FARM-01
+        template: "Clear field drainage channels in {area} to reduce waterlogging risk."
+        fact_fields: ["area"]
+      - id: ACT-FL-B-FARM-02
+        template: "Move grain sacks and fertilizers to elevated dry platforms."
+        fact_fields: []
+
+  - grade: B
+    persona: fisherman
+    actions:
+      - id: ACT-FL-B-FISH-01
+        template: "UNSAFE: High river discharge expected. Suspend inland river navigation in {area}."
+        fact_fields: ["area"]
+      - id: ACT-FL-B-FISH-02
+        template: "Monitor local river level warnings."
+        fact_fields: []
+
+  - grade: B
+    persona: elderly_alone
+    actions:
+      - id: ACT-FL-B-ELD-01
+        template: "Prepare personal emergency bag and arrange help in {area}."
+        fact_fields: ["area"]
+      - id: ACT-FL-B-ELD-02
+        template: "Keep mobile phone charged and emergency numbers ready."
+        fact_fields: []
+
+  - grade: B
+    persona: pregnant_infants
+    actions:
+      - id: ACT-FL-B-PREG-01
+        template: "Contact local health worker for early medical transfer in {area}."
+        fact_fields: ["area"]
+      - id: ACT-FL-B-PREG-02
+        template: "Prepare clean baby supplies and medical folder."
+        fact_fields: []
+
+  # Grade C (Stay Alert)
+  - grade: C
+    persona: general
+    actions:
+      - id: ACT-FL-C-GEN-01
+        template: "Monitor local weather updates for heavy rainfall in {area}."
+        fact_fields: ["area"]
+      - id: ACT-FL-C-GEN-02
+        template: "Avoid stepping into open drains or waterlogged streets."
+        fact_fields: []
+
+  - grade: C
+    persona: farmer
+    actions:
+      - id: ACT-FL-C-FARM-01
+        template: "Inspect agricultural field bunds in {area}."
+        fact_fields: ["area"]
+      - id: ACT-FL-C-FARM-02
+        template: "Keep livestock in dry sheltered pens."
+        fact_fields: []
+
+  - grade: C
+    persona: fisherman
+    actions:
+      - id: ACT-FL-C-FISH-01
+        template: "SAFE: River flow manageable. Exercise caution near riverbanks in {area}."
+        fact_fields: ["area"]
+      - id: ACT-FL-C-FISH-02
+        template: "Ensure life jackets are worn during boat trips."
+        fact_fields: []
+
+  - grade: C
+    persona: elderly_alone
+    actions:
+      - id: ACT-FL-C-ELD-01
+        template: "Stay indoors during heavy downpours in {area}."
+        fact_fields: ["area"]
+      - id: ACT-FL-C-ELD-02
+        template: "Keep torch light easily accessible."
+        fact_fields: []
+
+  - grade: C
+    persona: pregnant_infants
+    actions:
+      - id: ACT-FL-C-PREG-01
+        template: "Ensure access to clean drinking water in {area}."
+        fact_fields: ["area"]
+      - id: ACT-FL-C-PREG-02
+        template: "Keep health card and emergency contact numbers ready."
+        fact_fields: []
+
+  # Grade D (Information Only)
+  - grade: D
+    persona: general
+    actions:
+      - id: ACT-FL-D-GEN-01
+        template: "Light rain advisory for {area}. Normal routine."
+        fact_fields: ["area"]
+      - id: ACT-FL-D-GEN-02
+        template: "Check periodic updates."
+        fact_fields: []
+
+  - grade: D
+    persona: farmer
+    actions:
+      - id: ACT-FL-D-FARM-01
+        template: "Normal farming activities in {area}."
+        fact_fields: ["area"]
+      - id: ACT-FL-D-FARM-02
+        template: "Maintain regular drainage lines."
+        fact_fields: []
+
+  - grade: D
+    persona: fisherman
+    actions:
+      - id: ACT-FL-D-FISH-01
+        template: "SAFE: Normal river flow in {area}."
+        fact_fields: ["area"]
+      - id: ACT-FL-D-FISH-02
+        template: "Standard marine guidelines apply."
+        fact_fields: []
+
+  - grade: D
+    persona: elderly_alone
+    actions:
+      - id: ACT-FL-D-ELD-01
+        template: "Normal routine in {area}."
+        fact_fields: ["area"]
+      - id: ACT-FL-D-ELD-02
+        template: "Maintain regular medication intake."
+        fact_fields: []
+
+  - grade: D
+    persona: pregnant_infants
+    actions:
+      - id: ACT-FL-D-PREG-01
+        template: "Routine antenatal care in {area}."
+        fact_fields: ["area"]
+      - id: ACT-FL-D-PREG-02
+        template: "Maintain healthy nutrition."
+        fact_fields: []

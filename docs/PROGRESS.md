@@ -43,4 +43,15 @@
 - Verified `GET /api/alerts?state=Kerala` returns the Kerala flood fixture.
 - Verified `POST /api/admin/simulate/kerala_flood` successfully injects simulated drill alert.
 
+### 2026-09-22 - Prompt 3: Zero-LLM Action Intelligence & Grounding Layer (`app/core`)
+- Built immutable `FactSheet` builder (`app/core/factsheet.py`) extracting facts with stable IDs (`F1`, `F2`...), regex number/unit extraction for wind, waves, rainfall, temperature with character spans (`source_span`).
+- Built `GradeEngine` (`app/core/grade.py`) mapping severity, urgency, certainty, and color codes to Grades A, B, C, D with mandatory Grade A + Safety Check rule for Extreme severity or Red alerts.
+- Authored declarative YAML rule files for 5 hazards x 5 personas across all 4 grades in `app/core/rules/` (`cyclone.yaml`, `heavy_rain_flood.yaml`, `heatwave.yaml`, `thunderstorm_lightning.yaml`, `storm_surge_high_waves.yaml`).
+- Implemented `RuleEngine` (`app/core/rule_engine.py`) with Fisherman SAFE/UNSAFE threshold evaluation (>= 2.5m waves or >= 45 km/h wind) and template rendering with fact ID traceability (`why`).
+- Implemented `ActionPlan` model and builder (`app/core/action_plan.py`).
+- Built CLI demo simulator (`app/core/demo.py`) supporting `--scenario cyclone`, `--scenario flood`, and `--scenario heatwave`.
+- Created comprehensive unit test suite in `backend/tests/core/` (`test_factsheet.py`, `test_grade.py`, `test_rules.py`, `test_fisherman_rule.py`, `test_demo.py`).
+- Created root `app` package layout enabling `python -m app.core.demo --scenario cyclone` directly from the repository root.
+- All 147 backend unit tests passing cleanly (`pytest backend/tests -q`).
+
 
