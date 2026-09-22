@@ -60,15 +60,30 @@ def compose_message_endpoint(req: ComposeRequest, db: Session = Depends(get_db))
     fs_dict = {"facts": [f.to_dict() for f in factsheet.facts]}
     ap_dict = actionplan.to_dict()
     
-    text, voice_script, ledger, path_used = compose_message(
+    text_en, voice_en, ledger_en, path_used = compose_message(
         alert_id=req.alert_id,
         factsheet=fs_dict,
         actionplan=ap_dict
     )
     
+    if req.lang.lower() != "en":
+        from app.lang.translator import translation_service
+        text, voice_script, ledger, path_used = translation_service.translate_message(
+            alert_id=req.alert_id,
+            factsheet=fs_dict,
+            actionplan=ap_dict,
+            text_en=text_en,
+            voice_en=voice_en,
+            lang=req.lang
+        )
+    else:
+        text = text_en
+        voice_script = voice_en
+        ledger = ledger_en
+    
     return ComposeResponse(
         text=text,
         voice_script=voice_script,
-        claim_ledger=ledger.dict(),
+        claim_ledger=ledger.dict() if hasattr(ledger, "dict") else ledger.model_dump(),
         path_used=path_used
     )

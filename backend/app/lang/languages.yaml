@@ -1,0 +1,187 @@
+languages:
+  - code: en
+    name: English
+    native_name: English
+    script: Latin
+    rtl: false
+    verified: true
+    tts_voice:
+      sarvam: "en-IN-female"
+      edge: "en-IN-NeerjaNeural"
+      gtts: "en"
+
+  - code: hi
+    name: Hindi
+    native_name: हिन्दी
+    script: Devanagari
+    rtl: false
+    verified: true
+    tts_voice:
+      sarvam: "hi-IN-female"
+      edge: "hi-IN-SwaraNeural"
+      gtts: "hi"
+
+  - code: bn
+    name: Bengali
+    native_name: বাংলা
+    script: Bengali
+    rtl: false
+    verified: true
+    tts_voice:
+      sarvam: "bn-IN-female"
+      edge: "bn-IN-TanishaaNeural"
+      gtts: "bn"
+
+  - code: te
+    name: Telugu
+    native_name: తెలుగు
+    script: Telugu
+    rtl: false
+    verified: true
+    tts_voice:
+      sarvam: "te-IN-female"
+      edge: "te-IN-ShrutiNeural"
+      gtts: "te"
+
+  - code: mr
+    name: Marathi
+    native_name: मराठी
+    script: Devanagari
+    rtl: false
+    verified: true
+    tts_voice:
+      sarvam: "mr-IN-female"
+      edge: "mr-IN-AarohiNeural"
+      gtts: "mr"
+
+  - code: ta
+    name: Tamil
+    native_name: தமிழ்
+    script: Tamil
+    rtl: false
+    verified: true
+    tts_voice:
+      sarvam: "ta-IN-female"
+      edge: "ta-IN-PallaviNeural"
+      gtts: "ta"
+
+  - code: or
+    name: Odia
+    native_name: ଓଡ଼ିଆ
+    script: Odia
+    rtl: false
+    verified: true
+    tts_voice:
+      sarvam: "od-IN-female"
+      edge: "hi-IN-SwaraNeural"
+      gtts: "hi"
+
+  - code: gu
+    name: Gujarati
+    native_name: ગુજરાતી
+    script: Gujarati
+    rtl: false
+    verified: true
+    tts_voice:
+      sarvam: "gu-IN-female"
+      edge: "gu-IN-DhwaniNeural"
+      gtts: "gu"
+
+  - code: kn
+    name: Kannada
+    native_name: ಕನ್ನಡ
+    script: Kannada
+    rtl: false
+    verified: true
+    tts_voice:
+      sarvam: "kn-IN-female"
+      edge: "kn-IN-SapnaNeural"
+      gtts: "kn"
+
+  - code: ml
+    name: Malayalam
+    native_name: മലയാളം
+    script: Malayalam
+    rtl: false
+    verified: true
+    tts_voice:
+      sarvam: "ml-IN-female"
+      edge: "ml-IN-SobhanaNeural"
+      gtts: "ml"
+
+  - code: pa
+    name: Punjabi
+    native_name: ਪੰਜਾਬੀ
+    script: Gurmukhi
+    rtl: false
+    verified: true
+    tts_voice:
+      sarvam: "pa-IN-female"
+      edge: "hi-IN-SwaraNeural"
+      gtts: "pa"
+
+  - code: ur
+    name: Urdu
+    native_name: اردو
+    script: Arabic
+    rtl: true
+    verified: false
+    tts_voice:
+      sarvam: "ur-IN-female"
+      edge: "ur-IN-GulNeural"
+      gtts: "ur"
+
+  - code: as
+    name: Assamese
+    native_name: অসমীয়া
+    script: Bengali
+    rtl: false
+    verified: false
+    tts_voice:
+      sarvam: "as-IN-female"
+      edge: "bn-IN-TanishaaNeural"
+      gtts: "bn"
+
+  - code: mai
+    name: Maithili
+    native_name: मैथिली
+    script: Devanagari
+    rtl: false
+    verified: false
+    tts_voice:
+      sarvam: "mai-IN-female"
+      edge: "hi-IN-SwaraNeural"
+      gtts: "hi"
+
+  - code: sa
+    name: Sanskrit
+    native_name: संस्कृतम्
+    script: Devanagari
+    rtl: false
+    verified: false
+    tts_voice:
+      sarvam: "sa-IN-female"
+      edge: "hi-IN-SwaraNeural"
+      gtts: "hi"
+
+  - code: sat
+    name: Santali
+    native_name: ᱥᱟᱱᱛᱟᱲᱤ
+    script: Ol Chiki
+    rtl: false
+    verified: false
+    tts_voice:
+      sarvam: "sat-IN-female"
+      edge: "hi-IN-SwaraNeural"
+      gtts: "hi"
+
+  - code: sd
+    name: Sindhi
+    native_name: سنڌي
+    script: Arabic
+    rtl: true
+    verified: false
+    tts_voice:
+      sarvam: "sd-IN-female"
+      edge: "ur-IN-GulNeural"
+      gtts: "ur"
