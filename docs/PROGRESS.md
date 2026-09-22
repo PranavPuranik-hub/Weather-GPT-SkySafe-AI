@@ -74,5 +74,50 @@
   - `GET /api/languages`: lists verified languages (or all 17 when `?all=true`).
 - Added comprehensive test suite `tests/test_lang_and_voice.py` verifying 7 languages across 3 scenarios, audio <= 30s, and proving that any translation altering a numeral is strictly rejected.
 - All 225 backend unit tests passing cleanly (`pytest tests/ -q`).
+- 
+### 2026-09-22 - Prompt 6: Citizen Conversational AI (`/backend/app/chat` & `/frontend/src/app/chat`)
+- Addressed SIH problem SIH26068 ("WeatherGPT: Conversational AI for weather forecasting, alerts and climate information"):
+  - Built deterministic tool layer in `app/chat/tools.py`: `get_active_alerts`, `get_forecast`, `get_marine`, `get_climate_normals`, `nearest_shelter`, backed by curated emergency cyclone shelters registry and Open-Meteo/climatology fallbacks.
+  - Implemented geocoding resolver in `app/chat/geocoding.py` with disaster-prone district registry, reverse geocoding for GPS coordinates, and India-bounded Nominatim geocoder with in-memory caching.
+  - Built rule-first intent router in `app/chat/router.py` covering 9 core intents across English, Hindi, and Odia: `current_alert`, `forecast`, `safety_check`, `nearest_shelter`, `action_advice`, `climate_info`, `change_language`, `registration`, `report_incident`.
+  - Implemented chat orchestration engine in `app/chat/engine.py` producing deterministic FactSheets, executing Grounding Validator to yield audit-proof `ClaimLedger`, and synthesizing voice notes.
+  - Enforced strict honest fallback: out-of-scope queries clearly declare lack of official data and direct citizens to official IMD helpline (1800-180-1717 / 1077 / `https://mausam.imd.gov.in`).
+  - Privacy compliance: Phone numbers stored only as irreversible SHA-256 hashes for alert subscription consent.
+  - Built full API endpoints in `app/api/chat.py`: `POST /api/chat/message`, `POST /api/chat/onboard`, `POST /api/chat/report`, `POST /api/chat/simulate`.
+  - Built Next.js WhatsApp-styled UI simulator in `frontend/src/app/chat/page.tsx`:
+    - High-contrast, accessible design tailored for ₹5,000 Android phones.
+    - Interactive onboarding modal (language selector, 5 persona icons, location/GPS detection, alert consent).
+    - WhatsApp green bubbles with double checkmarks, quick-reply chip bar, Web Speech API mic button for voice transcription.
+    - In-bubble voice note player with animated waveform bars and <=30s duration playback.
+    - Verified Claim Ledger proof drawer (`components/ClaimLedgerDrawer.tsx`) providing sentence-level grounding audit and facts breakdown.
+### 2026-09-22 - Prompt 6: Simulation Flow Debug & End-to-End Broadcast Integration
+- Debugged and unified the simulation pipeline using existing Prompt 2 infrastructure without dummy or faked components:
+  - Frontend `DevPanel` (`components/DevPanel.tsx`) now directly triggers `POST /api/admin/simulate/{scenario}` with query params `lang`, `persona`, and `district`.
+  - Expanded `ingest_service.simulate_scenario` (`app/ingest/service.py`) with support for scenario timeline steps (`cyclone_t24`, `cyclone_t12`, `cyclone_t3`), short aliases (`cyclone`, `flood`, `heatwave`), and target district customization.
+  - Implemented `deliver_broadcast` in `app/channels/broadcast.py`:
+    - Constructs FactSheet and ActionPlan for the target persona.
+    - Generates grounded Class-6 message via `compose_message` and `translation_service`.
+    - Enforces Rule 2: `[DRILL / SIMULATION]` labels on message and voice script.
+    - Synthesizes real localized voice note audio using `voice_synthesizer`.
+    - Measures real dispatch latency in milliseconds (`delivery_latency_ms`), enforcing `<60s` SLA.
+  - Enriched `POST /api/admin/simulate/{scenario}` to return the original simulated alert dictionary augmented with the broadcast delivery payload (`message`, `voice_script`, `audio_url`, `claim_ledger`, `delivery_latency_ms`, `quick_replies`).
+  - Updated `ChatPage` (`frontend/src/app/chat/page.tsx`) to append the incoming emergency drill message, render the animated voice player, enable the ClaimLedgerDrawer proof inspection, and display the live latency timer in the dev panel.
+### 2026-09-22 - Prompt 6: Geographic Coherence & Grounding Validator Audit
+- Identified root cause of mismatched places (e.g., "Nagpur, Rajasthan"):
+  - When a drill scenario district was selected (e.g. `Nagpur`), the fixture's default state (`Rajasthan`) was retained, producing a FactSheet with `area = Nagpur, Rajasthan`.
+  - The Grounding Validator previously verified that the LLM/template did not hallucinate facts beyond the input `FactSheet`. Because `Nagpur, Rajasthan` was explicitly in the input `FactSheet`, the validator correctly reported `PASS` with zero ungrounded tokens relative to the source data.
+- Implemented dual-layer Geographic Coherence protection:
+  1. `app/ingest/service.py`: Added `KNOWN_DISTRICT_TO_STATE` lookup table so drill scenario simulations dynamically map districts to their authentic states (e.g., `Nagpur` -> `Maharashtra`, `Wayanad` -> `Kerala`, `Cuttack` -> `Odisha`), harmonizing `parsed["state"]`, `parsed["area_desc"]`, `parsed["headline"]`, and `parsed["description"]`.
+  2. `app/validator/engine.py`: Enhanced `validate_sentence()` with an explicit Geographic Coherence audit rule. Any sentence linking a known Indian district with a conflicting state (e.g., `Nagpur, Rajasthan`) is deterministically rejected (`status = FAIL`, `reason = "Geographic discrepancy: 'Nagpur' is in 'Maharashtra', not 'Rajasthan'."`).
+- Verified with 244 backend unit tests passing cleanly.
 
-
+### 2026-09-22 - Prompt 6: Active Alert Pipeline Fix & Frontend CSS Restoration
+- Corrected active-alert query flow:
+  - Replaced ad-hoc string formatting in `app/chat/engine.py` with the full grounding pipeline: `FactSheet` -> `ActionPlan` -> `compose_message` -> `validate_payload` -> `ClaimLedger`.
+  - Added strict check for `is_simulation`: `[DRILL / SIMULATION]` prefix is added if and only if the underlying alert is a simulation drill (`is_simulation == True`). Genuine warnings are never prefixed with `[DRILL]`.
+  - In `app/chat/tools.py`, prioritized exact `Alert.district` matching before fallback to substring searches, and sorted actual alerts before simulation drills.
+  - In `frontend/src/app/chat/page.tsx`, ensured regular chat responses have `isDrill: false` and restricted the red `EMERGENCY BROADCAST [DRILL]` header banner exclusively to incoming broadcast drills.
+  - Added unit tests in `tests/test_chat.py` verifying active Wayanad alert data, `status: PASS` ledger, and absence of drill label on real alerts (all 246 backend tests pass).
+- Resolved frontend CSS rendering regression:
+  - Root cause: An orphan Node process on port 3000 was serving stale dev HTML while its `.next/static/css` assets had been overwritten during a concurrent build, resulting in HTTP 404 for `/_next/static/css/app/layout.css`.
+  - Cleared stale `.next` cache, terminated orphan background processes on ports 3000/3001, and restarted dev server. Verified `app/layout.css` compiles via Tailwind CSS and returns HTTP 200 (37.8 KB), fully restoring WhatsApp styling, fonts, icons, and layout.

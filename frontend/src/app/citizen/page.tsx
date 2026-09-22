@@ -39,9 +39,18 @@ export default function CitizenPage() {
           <span>Listen to Voice Action (Hindi / Odia)</span>
         </button>
 
+        {/* Conversational AI Chat Button */}
+        <Link
+          href="/chat"
+          className="w-full bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white font-bold py-4 px-6 rounded-xl text-lg flex items-center justify-center gap-3 shadow-lg transition-transform"
+        >
+          <Volume2 className="w-6 h-6" />
+          <span>Ask WeatherGPT Chat & Voice Assistant →</span>
+        </Link>
+
         {/* Grounded Action Bullet Points */}
         <div className="bg-slate-950/80 rounded-xl p-4 border border-slate-800 space-y-2 text-slate-200">
-          <h3 className="font-bold text-sm text-blue-400 uppercase tracking-wide">Immediate Do's:</h3>
+          <h3 className="font-bold text-sm text-blue-400 uppercase tracking-wide">Immediate Do&apos;s:</h3>
           <ul className="list-disc list-inside space-y-1 text-sm font-medium">
             <li>Move to nearest concrete shelter immediately.</li>
             <li>Keep emergency light and drinking water ready.</li>

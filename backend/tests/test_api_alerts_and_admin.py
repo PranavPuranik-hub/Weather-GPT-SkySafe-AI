@@ -67,3 +67,45 @@ def test_simulate_scenario_rejected_in_live_mode(monkeypatch):
     response = client.post("/api/admin/simulate/kerala_flood")
     assert response.status_code == 403
     assert "only allowed in fixtures/demo mode" in response.json()["detail"]
+
+
+def test_simulate_scenario_full_broadcast_delivery_flow():
+    """
+    Verifies the simulation endpoint directly:
+    dev panel -> POST /api/admin/simulate/{scenario}
+    -> backend creates simulated alert
+    -> broadcast/delivery service
+    -> delivers message, voice note, claim ledger, and latency measurement (<60s SLA).
+    """
+    response = client.post(
+        "/api/admin/simulate/odisha_cyclone?lang=hi&persona=General&district=Cuttack"
+    )
+    assert response.status_code == 200
+    data = response.json()
+
+    # 1. Alert fields
+    assert data["is_simulation"] is True
+    assert data["note"] == "DRILL - SIMULATED"
+    assert "Cuttack" in data["district"] or "Cuttack" in data["headline"]
+
+    # 2. Grounded message & voice script
+    assert "[DRILL" in data["message"]
+    assert "[DRILL" in data["voice_script"]
+
+    # 3. Audio / Voice Note synthesis
+    assert "audio_url" in data
+    assert data["audio_url"] is not None
+
+    # 4. ClaimLedger validation
+    assert "claim_ledger" in data
+    assert data["claim_ledger"]["status"] == "PASS"
+
+    # 5. Delivery Latency measurement (< 60s SIH requirement)
+    assert "delivery_latency_ms" in data
+    assert data["delivery_latency_ms"] > 0
+    assert data["delivery_latency_ms"] < 60000.0
+
+    # 6. Broadcast metadata
+    assert "broadcast" in data
+    assert data["broadcast"]["status"] == "DELIVERED"
+    assert data["broadcast"]["sla_met"] is True

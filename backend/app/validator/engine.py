@@ -208,6 +208,50 @@ def validate_sentence(
             reason = f"Hallucinated place name '{fp}'"
             break
 
+    # Geographic Coherence Check: ensure known districts are not falsely paired with an incorrect state
+    KNOWN_DISTRICT_TO_STATE = {
+        "nagpur": "Maharashtra",
+        "mumbai": "Maharashtra",
+        "ratnagiri": "Maharashtra",
+        "pune": "Maharashtra",
+        "cuttack": "Odisha",
+        "puri": "Odisha",
+        "bhubaneswar": "Odisha",
+        "khordha": "Odisha",
+        "ganjam": "Odisha",
+        "balasore": "Odisha",
+        "wayanad": "Kerala",
+        "kozhikode": "Kerala",
+        "ernakulam": "Kerala",
+        "idukki": "Kerala",
+        "churu": "Rajasthan",
+        "bikaner": "Rajasthan",
+        "jaipur": "Rajasthan",
+        "patna": "Bihar",
+        "chennai": "Tamil Nadu",
+        "cuddalore": "Tamil Nadu",
+        "visakhapatnam": "Andhra Pradesh",
+        "uttarkashi": "Uttarakhand",
+    }
+    INDIAN_STATES = [
+        "Odisha", "Maharashtra", "Kerala", "Rajasthan", "Bihar",
+        "Tamil Nadu", "Andhra Pradesh", "Uttarakhand", "West Bengal", "Gujarat"
+    ]
+
+    for dist, expected_state in KNOWN_DISTRICT_TO_STATE.items():
+        if re.search(rf'\b{re.escape(dist)}\b', text, re.IGNORECASE):
+            for conflict_state in INDIAN_STATES:
+                if conflict_state.lower() != expected_state.lower():
+                    # Check for pattern "District, State" or "District in State"
+                    pair_pattern = rf'\b{re.escape(dist)}\b[\s,]+(?:in\s+)?{re.escape(conflict_state)}\b'
+                    rev_pattern = rf'\b{re.escape(conflict_state)}\b[\s,]+(?:in\s+)?{re.escape(dist)}\b'
+                    if re.search(pair_pattern, text, re.IGNORECASE) or re.search(rev_pattern, text, re.IGNORECASE):
+                        status = "FAIL"
+                        reason = f"Geographic discrepancy: '{dist.title()}' is in '{expected_state}', not '{conflict_state}'."
+                        break
+            if status == "FAIL":
+                break
+
     return SentenceValidation(
         sentence_index=sentence_idx,
         text=text,

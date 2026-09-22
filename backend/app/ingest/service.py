@@ -3,7 +3,7 @@ Ingestion Service: Deduplication, Expiration Marking, Lag Calculation, and Scena
 """
 import logging
 import time
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from sqlalchemy.orm import Session
@@ -141,29 +141,40 @@ class IngestService:
 
         return stored_alerts
 
-    def simulate_scenario(self, scenario_name: str, db: Session | None = None) -> Alert | None:
+    def simulate_scenario(self, scenario_name: str, district: str | None = None, db: Session | None = None) -> Alert | None:
         """
         Inject a drill scenario alert into the database with current timestamp.
         Allowed only in fixtures/demo mode.
         """
         fixture_map = {
+            # Standard scenario fixtures
             "kerala_flood": "heavy_rain_kerala.xml",
             "heavy_rain_kerala": "heavy_rain_kerala.xml",
+            "flood": "heavy_rain_kerala.xml",
             "odisha_cyclone": "cyclone_odisha.xml",
             "cyclone_odisha": "cyclone_odisha.xml",
+            "cyclone": "cyclone_odisha.xml",
+            "cyclone_t24": "cyclone_odisha.xml",
+            "cyclone_t12": "cyclone_odisha.xml",
+            "cyclone_t3": "cyclone_odisha.xml",
             "rajasthan_heatwave": "heatwave_rajasthan.xml",
             "heatwave_rajasthan": "heatwave_rajasthan.xml",
+            "heatwave": "heatwave_rajasthan.xml",
             "bihar_thunderstorm": "thunderstorm_bihar.xml",
             "thunderstorm_bihar": "thunderstorm_bihar.xml",
+            "thunderstorm": "thunderstorm_bihar.xml",
             "tamilnadu_high_wave": "high_wave_tamilnadu.xml",
             "high_wave_tamilnadu": "high_wave_tamilnadu.xml",
+            "high_wave": "high_wave_tamilnadu.xml",
             "uttarakhand_landslide": "landslide_uttarakhand.xml",
             "landslide_uttarakhand": "landslide_uttarakhand.xml",
+            "landslide": "landslide_uttarakhand.xml",
             "andhra_cyclone": "cyclone_andhra.xml",
             "cyclone_andhra": "cyclone_andhra.xml",
         }
 
-        filename = fixture_map.get(scenario_name.lower())
+        key = scenario_name.lower().strip()
+        filename = fixture_map.get(key)
         if not filename:
             # Attempt to find by matching XML name directly
             target = f"{scenario_name}.xml"
@@ -187,9 +198,80 @@ class IngestService:
         now = datetime.now(UTC)
         parsed["sent"] = now
         parsed["effective"] = now
+        parsed["expires"] = now + timedelta(days=2)
         parsed["status"] = "Exercise"
         parsed["is_simulation"] = True
+        parsed["is_expired"] = False
         parsed["note"] = "DRILL - SIMULATED"
+
+        # Specific scenario step customizations
+        if key == "cyclone_t24":
+            parsed["event"] = "Cyclonic Storm Watch"
+            parsed["severity"] = "Moderate"
+            parsed["urgency"] = "Future"
+            parsed["certainty"] = "Possible"
+            parsed["headline"] = "Yellow Advisory: Cyclonic depression in Bay of Bengal moving towards coast."
+            parsed["description"] = "System likely to intensify with wind speeds of 50 km/h and wave heights of 2.0 meters."
+        elif key == "cyclone_t12":
+            parsed["event"] = "Severe Cyclonic Storm Warning"
+            parsed["severity"] = "Severe"
+            parsed["urgency"] = "Expected"
+            parsed["certainty"] = "Likely"
+            parsed["headline"] = "Orange Warning: Severe Cyclone Approaching coast with gale winds."
+            parsed["description"] = "Gale winds of 95 km/h gusting to 120 kmph with swell waves of 3.8 meters expected."
+        elif key == "cyclone_t3":
+            parsed["event"] = "Very Severe Cyclonic Storm"
+            parsed["severity"] = "Extreme"
+            parsed["urgency"] = "Immediate"
+            parsed["certainty"] = "Observed"
+            parsed["headline"] = "Red Alert: Landfall Imminent. Very Severe Cyclone Approaching Coast."
+            parsed["description"] = "Severe cyclonic storm with sustained winds of 130-155 kmph. Evacuate immediately."
+
+        # District override if specified - ensure geographical state coherence
+        KNOWN_DISTRICT_TO_STATE = {
+            "nagpur": "Maharashtra",
+            "mumbai": "Maharashtra",
+            "ratnagiri": "Maharashtra",
+            "pune": "Maharashtra",
+            "cuttack": "Odisha",
+            "puri": "Odisha",
+            "bhubaneswar": "Odisha",
+            "khordha": "Odisha",
+            "ganjam": "Odisha",
+            "balasore": "Odisha",
+            "wayanad": "Kerala",
+            "kozhikode": "Kerala",
+            "ernakulam": "Kerala",
+            "idukki": "Kerala",
+            "munnar": "Kerala",
+            "churu": "Rajasthan",
+            "bikaner": "Rajasthan",
+            "jaipur": "Rajasthan",
+            "patna": "Bihar",
+            "chennai": "Tamil Nadu",
+            "cuddalore": "Tamil Nadu",
+            "visakhapatnam": "Andhra Pradesh",
+            "uttarkashi": "Uttarakhand",
+        }
+
+        if district and district.strip():
+            target_dist = district.strip()
+            parsed["district"] = target_dist
+
+            dist_key = target_dist.lower()
+            if dist_key in KNOWN_DISTRICT_TO_STATE:
+                correct_state = KNOWN_DISTRICT_TO_STATE[dist_key]
+                old_state = parsed.get("state", "")
+                parsed["state"] = correct_state
+                parsed["area_desc"] = f"{target_dist}, {correct_state}"
+
+                if old_state and old_state.lower() != correct_state.lower():
+                    parsed["headline"] = parsed["headline"].replace(old_state, correct_state)
+                    if parsed.get("description"):
+                        parsed["description"] = parsed["description"].replace(old_state, correct_state)
+            else:
+                parsed["area_desc"] = f"{target_dist}, {parsed.get('state', '')}"
+
         # Generate unique identifier for this simulation instance
         parsed["identifier"] = f"{parsed['identifier']}-SIM-{int(time.time())}"
         parsed["alert_id"] = parsed["identifier"]

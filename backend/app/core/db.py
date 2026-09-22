@@ -8,12 +8,19 @@ from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 from app.core.config import settings
 
+from pathlib import Path
+
 logger = logging.getLogger("app.db")
 
 class Base(DeclarativeBase):
     """Base class for ORM models."""
 
-db_url = settings.DATABASE_URL or "sqlite:///./app_test.db"
+if settings.DATABASE_URL:
+    db_url = settings.DATABASE_URL
+else:
+    # Anchor to project root so tests, CLI, and uvicorn share the exact same DB file
+    root_db = Path(__file__).resolve().parents[3] / "app_test.db"
+    db_url = f"sqlite:///{root_db.as_posix()}"
 
 # Enable sqlite thread check bypass for test simplicity if sqlite
 connect_args = {"check_same_thread": False} if db_url.startswith("sqlite") else {}
