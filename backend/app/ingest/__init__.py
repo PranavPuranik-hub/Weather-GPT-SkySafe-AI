@@ -1,12 +1,12 @@
 """
 Ingest package: Data fetching and parsing for SACHET (CAP format) and Open-Meteo APIs.
 """
-from skysafe.ingest.cap_parser import parse_cap_xml
-from skysafe.ingest.imd_client import ImdClient, imd_client
-from skysafe.ingest.open_meteo import OpenMeteoClient, open_meteo_client
-from skysafe.ingest.sachet_client import SachetClient, sachet_client
-from skysafe.ingest.scheduler import start_ingest_scheduler, stop_ingest_scheduler
-from skysafe.ingest.service import IngestService, ingest_service
+from app.ingest.cap_parser import parse_cap_xml
+from app.ingest.imd_client import ImdClient, imd_client
+from app.ingest.open_meteo import OpenMeteoClient, open_meteo_client
+from app.ingest.sachet_client import SachetClient, sachet_client
+from app.ingest.scheduler import start_ingest_scheduler, stop_ingest_scheduler
+from app.ingest.service import IngestService, ingest_service
 
 
 def fetch_sachet_alerts():

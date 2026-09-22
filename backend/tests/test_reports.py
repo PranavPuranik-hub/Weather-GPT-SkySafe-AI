@@ -1,4 +1,4 @@
-from skysafe.reports import generate_sitrep
+from app.reports import generate_sitrep
 
 
 def test_generate_sitrep():

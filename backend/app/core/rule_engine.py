@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import yaml
 from app.core.factsheet import FactSheet
 
-logger = logging.getLogger("skysafe.core.rules")
+logger = logging.getLogger("app.core.rules")
 
 
 def normalize_hazard(hazard: str) -> str:
@@ -141,13 +141,11 @@ class RuleEngine:
                     if fact_obj.id not in fact_ids_used:
                         fact_ids_used.append(fact_obj.id)
                 else:
-                    # Provide sensible default if field missing in factsheet
                     val_str = "reported" if f_field in ("area", "onset") else "forecast"
 
                 placeholder = f"{{{f_field}}}"
                 rendered_text = rendered_text.replace(placeholder, val_str)
 
-            # Ensure area placeholder replacement even if not in fact_fields
             if "{area}" in rendered_text:
                 area_fact = factsheet.get_fact("area")
                 area_val = str(area_fact.value) if area_fact else "Affected Area"
@@ -161,7 +159,6 @@ class RuleEngine:
                 "fact_refs": [f.id for f in factsheet.facts if f.field in fact_fields]
             })
 
-        # Guarantee at least 2 actions returned
         if not rendered_actions:
             area_fact = factsheet.get_fact("area")
             area_str = str(area_fact.value) if area_fact else "Affected Zone"
@@ -170,7 +167,6 @@ class RuleEngine:
                 {"id": f"ACT-{norm_hazard[:3].upper()}-{norm_grade}-02", "action": "Keep mobile phone charged and emergency contact numbers accessible.", "fact_refs": []}
             ]
 
-        # Clean duplicate fact IDs while preserving order
         deduped_fact_ids = list(dict.fromkeys(fact_ids_used))
 
         return rendered_actions, deduped_fact_ids

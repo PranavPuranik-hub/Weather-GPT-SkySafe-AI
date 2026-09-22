@@ -3,10 +3,10 @@ Tests for Alert Querying API, Drill Simulation API, and /health Ingestion Lag Me
 """
 from fastapi.testclient import TestClient
 
-from skysafe.core.config import settings
-from skysafe.core.db import Base, engine
-from skysafe.ingest.service import ingest_service
-from skysafe.main import app
+from app.core.config import settings
+from app.core.db import Base, engine
+from app.ingest.service import ingest_service
+from app.main import app
 
 # Ensure tables exist
 Base.metadata.create_all(bind=engine)

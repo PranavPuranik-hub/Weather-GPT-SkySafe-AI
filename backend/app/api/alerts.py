@@ -6,8 +6,8 @@ from typing import Any
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
-from skysafe.core.db import SessionLocal
-from skysafe.models import Alert
+from app.core.db import SessionLocal
+from app.models import Alert
 
 router = APIRouter(prefix="/api/alerts", tags=["Alerts"])
 

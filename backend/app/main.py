@@ -7,13 +7,13 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from skysafe.api import admin_router, alerts_router, health_router
-from skysafe.core.config import settings
-from skysafe.core.db import Base, engine
-from skysafe.ingest.scheduler import start_ingest_scheduler, stop_ingest_scheduler
-from skysafe.ingest.service import ingest_service
+from app.api import admin_router, alerts_router, health_router, compose_router
+from app.core.config import settings
+from app.core.db import Base, engine
+from app.ingest.scheduler import start_ingest_scheduler, stop_ingest_scheduler
+from app.ingest.service import ingest_service
 
-logger = logging.getLogger("skysafe")
+logger = logging.getLogger("app")
 
 
 @asynccontextmanager
@@ -54,6 +54,7 @@ app.add_middleware(
 app.include_router(health_router)
 app.include_router(alerts_router)
 app.include_router(admin_router)
+app.include_router(compose_router)
 
 
 @app.get("/")

@@ -1,4 +1,4 @@
-from skysafe.dashboard import get_district_risk_summary
+from app.dashboard import get_district_risk_summary
 
 
 def test_district_risk_summary():

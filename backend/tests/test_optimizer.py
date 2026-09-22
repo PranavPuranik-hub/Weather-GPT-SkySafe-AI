@@ -1,4 +1,4 @@
-from skysafe.optimizer import optimize_resource_allocation
+from app.optimizer import optimize_resource_allocation
 
 
 def test_resource_optimizer():

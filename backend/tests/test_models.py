@@ -1,4 +1,4 @@
-from skysafe.models import Alert
+from app.models import Alert
 
 
 def test_alert_model():

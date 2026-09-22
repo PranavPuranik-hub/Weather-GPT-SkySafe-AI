@@ -6,10 +6,10 @@ from datetime import UTC, datetime, timedelta
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from skysafe.core.db import Base
-from skysafe.ingest.sachet_client import sachet_client
-from skysafe.ingest.service import IngestService
-from skysafe.models import Alert
+from app.core.db import Base
+from app.ingest.sachet_client import sachet_client
+from app.ingest.service import IngestService
+from app.models import Alert
 
 
 def setup_test_db():

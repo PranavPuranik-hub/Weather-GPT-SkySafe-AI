@@ -10,9 +10,9 @@ from typing import Any
 import httpx
 from pydantic import BaseModel, Field
 
-from skysafe.core.config import settings
+from app.core.config import settings
 
-logger = logging.getLogger("skysafe.ingest.open_meteo")
+logger = logging.getLogger("app.ingest.open_meteo")
 
 CACHE_TTL_SECONDS = 15 * 60  # 15 minutes
 

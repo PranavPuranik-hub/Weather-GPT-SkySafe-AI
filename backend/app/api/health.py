@@ -5,10 +5,10 @@ from typing import Any
 
 from fastapi import APIRouter
 
-from skysafe.core.config import settings
-from skysafe.core.db import SessionLocal, check_db_health
-from skysafe.ingest.service import ingest_service
-from skysafe.models import Alert
+from app.core.config import settings
+from app.core.db import SessionLocal, check_db_health
+from app.ingest.service import ingest_service
+from app.models import Alert
 
 router = APIRouter(tags=["Health"])
 

@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     VERSION: str = "0.1.0"
 
     # Environment & Database Configuration
-    DATABASE_URL: str | None = "sqlite:///./skysafe_test.db"
+    DATABASE_URL: str | None = "sqlite:///./app_test.db"
     MODE: Literal["live", "fixtures"] = "fixtures"
 
     # LLM Provider Configuration

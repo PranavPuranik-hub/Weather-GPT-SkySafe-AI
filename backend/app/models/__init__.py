@@ -6,7 +6,7 @@ from typing import Any
 
 from sqlalchemy import Boolean, Column, DateTime, Float, Integer, String, Text
 
-from skysafe.core.db import Base
+from app.core.db import Base
 
 
 class Alert(Base):

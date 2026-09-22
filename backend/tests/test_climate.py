@@ -1,4 +1,4 @@
-from skysafe.climate import get_climate_trends
+from app.climate import get_climate_trends
 
 
 def test_climate_trends():

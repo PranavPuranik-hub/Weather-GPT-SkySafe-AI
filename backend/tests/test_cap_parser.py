@@ -4,7 +4,7 @@ Tests for CAP 1.2 XML parsing, geometry extraction, and malformed input toleranc
 import json
 from pathlib import Path
 
-from skysafe.ingest.cap_parser import _extract_polygon_geojson, parse_cap_xml
+from app.ingest.cap_parser import _extract_polygon_geojson, parse_cap_xml
 
 
 def test_parse_valid_kerala_fixture():

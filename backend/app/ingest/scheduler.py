@@ -6,11 +6,11 @@ from datetime import datetime
 
 from apscheduler.schedulers.background import BackgroundScheduler
 
-from skysafe.core.config import settings
-from skysafe.ingest.open_meteo import open_meteo_client
-from skysafe.ingest.service import ingest_service
+from app.core.config import settings
+from app.ingest.open_meteo import open_meteo_client
+from app.ingest.service import ingest_service
 
-logger = logging.getLogger("skysafe.ingest.scheduler")
+logger = logging.getLogger("app.ingest.scheduler")
 
 scheduler = BackgroundScheduler()
 

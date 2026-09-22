@@ -8,14 +8,14 @@ from typing import Any
 
 from sqlalchemy.orm import Session
 
-from skysafe.core.config import settings
-from skysafe.core.db import SessionLocal
-from skysafe.ingest.cap_parser import parse_cap_xml
-from skysafe.ingest.imd_client import imd_client
-from skysafe.ingest.sachet_client import sachet_client
-from skysafe.models import Alert
+from app.core.config import settings
+from app.core.db import SessionLocal
+from app.ingest.cap_parser import parse_cap_xml
+from app.ingest.imd_client import imd_client
+from app.ingest.sachet_client import sachet_client
+from app.models import Alert
 
-logger = logging.getLogger("skysafe.ingest.service")
+logger = logging.getLogger("app.ingest.service")
 
 
 class IngestService:

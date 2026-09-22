@@ -44,7 +44,6 @@ def generate_action_plan(
     """
     Generate an ActionPlan for a given FactSheet and persona without LLM dependency.
     """
-    # 1. Determine hazard
     event_val = str(factsheet.get_value("event", "cyclone")).lower()
     if hazard_override:
         hazard = hazard_override
@@ -59,14 +58,12 @@ def generate_action_plan(
     else:
         hazard = "cyclone"
 
-    # 2. Evaluate Grade
     severity = factsheet.get_value("severity", "Moderate")
     urgency = factsheet.get_value("urgency", "Expected")
     certainty = factsheet.get_value("certainty", "Observed")
 
     grade_result = GradeEngine.evaluate(severity=severity, urgency=urgency, certainty=certainty)
 
-    # 3. Retrieve Actions and Fact Traceability IDs ('why')
     ordered_actions, why_fact_ids = rule_engine.get_actions(
         hazard=hazard,
         grade=grade_result.grade,
@@ -74,12 +71,10 @@ def generate_action_plan(
         factsheet=factsheet
     )
 
-    # 4. Formulate Headline Facts
     headline_facts: List[str] = []
     for f in factsheet.facts[:5]:
         headline_facts.append(f"{f.id}: {f.field} = {f.value}")
 
-    # Expiry time from factsheet
     expiry_time = factsheet.get_value("expires")
 
     return ActionPlan(

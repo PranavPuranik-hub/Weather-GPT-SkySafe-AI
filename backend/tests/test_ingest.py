@@ -1,4 +1,4 @@
-from skysafe.ingest import fetch_open_meteo_forecast, fetch_sachet_alerts
+from app.ingest import fetch_open_meteo_forecast, fetch_sachet_alerts
 
 
 def test_ingest_functions():

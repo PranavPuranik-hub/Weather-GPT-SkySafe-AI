@@ -1,7 +1,7 @@
 """
 Tests for Open-Meteo Typed Client: Caching, Offline Fixtures, and Fallback.
 """
-from skysafe.ingest.open_meteo import OpenMeteoClient
+from app.ingest.open_meteo import OpenMeteoClient
 
 
 def test_open_meteo_offline_fixtures():

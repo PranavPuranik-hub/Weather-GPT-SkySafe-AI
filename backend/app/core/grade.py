@@ -1,5 +1,5 @@
 """
-Deterministic Grade Engine Mapping Severity, Urgency, Certainty, and Color Codes to Action Grades.
+Deterministically evaluated threat grade result with mandatory safety check flag.
 """
 from dataclasses import dataclass
 from typing import Literal, Optional
@@ -45,7 +45,6 @@ class GradeEngine:
         cert = (certainty or "Observed").strip().title()
         color = (color_code or "").strip().title()
 
-        # Resolve IMD Color Code if not explicitly provided
         if not color:
             if sev == "Extreme":
                 color = "Red"

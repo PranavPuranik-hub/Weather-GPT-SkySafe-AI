@@ -7,10 +7,10 @@ from typing import Any
 
 import httpx
 
-from skysafe.core.config import settings
-from skysafe.ingest.cap_parser import parse_cap_xml
+from app.core.config import settings
+from app.ingest.cap_parser import parse_cap_xml
 
-logger = logging.getLogger("skysafe.ingest.imd")
+logger = logging.getLogger("app.ingest.imd")
 
 
 class ImdClient:

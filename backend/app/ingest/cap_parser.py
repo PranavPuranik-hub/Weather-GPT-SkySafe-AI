@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 from typing import Any
 
-logger = logging.getLogger("skysafe.ingest.cap")
+logger = logging.getLogger("app.ingest.cap")
 
 
 def _parse_datetime(dt_str: str | None) -> datetime | None:

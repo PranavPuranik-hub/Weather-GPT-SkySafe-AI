@@ -1,4 +1,4 @@
-from skysafe.i18n import translate
+from app.i18n import translate
 
 
 def test_translation_function():

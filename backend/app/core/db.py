@@ -6,14 +6,14 @@ import logging
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
-from skysafe.core.config import settings
+from app.core.config import settings
 
-logger = logging.getLogger("skysafe.db")
+logger = logging.getLogger("app.db")
 
 class Base(DeclarativeBase):
     """Base class for ORM models."""
 
-db_url = settings.DATABASE_URL or "sqlite:///./skysafe_test.db"
+db_url = settings.DATABASE_URL or "sqlite:///./app_test.db"
 
 # Enable sqlite thread check bypass for test simplicity if sqlite
 connect_args = {"check_same_thread": False} if db_url.startswith("sqlite") else {}

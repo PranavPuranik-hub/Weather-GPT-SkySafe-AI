@@ -1,4 +1,4 @@
-from skysafe.voice import text_to_speech
+from app.voice import text_to_speech
 
 
 def test_text_to_speech():

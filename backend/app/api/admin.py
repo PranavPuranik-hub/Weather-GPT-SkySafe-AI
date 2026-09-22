@@ -6,9 +6,9 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from skysafe.core.config import settings
-from skysafe.core.db import SessionLocal
-from skysafe.ingest.service import ingest_service
+from app.core.config import settings
+from app.core.db import SessionLocal
+from app.ingest.service import ingest_service
 
 router = APIRouter(prefix="/api/admin", tags=["Admin"])
 

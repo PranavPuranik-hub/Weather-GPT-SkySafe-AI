@@ -1,4 +1,4 @@
-from skysafe.agent import NullProvider
+from app.agent import NullProvider
 
 
 def test_null_agent_provider():

@@ -28,7 +28,6 @@ def run_demo(scenario: str = "cyclone") -> None:
     now = datetime.now(timezone.utc)
     personas = ["general", "farmer", "fisherman", "elderly_alone", "pregnant_infants"]
 
-    # Define timeline steps based on scenario
     if scenario.lower() == "cyclone":
         timeline_steps = [
             {
@@ -117,7 +116,7 @@ def run_demo(scenario: str = "cyclone") -> None:
                 }
             }
         ]
-    else: # Heatwave
+    else:
         timeline_steps = [
             {
                 "step": "Peak Noon Heatwave Advisory",

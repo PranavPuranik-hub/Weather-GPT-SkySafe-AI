@@ -70,7 +70,6 @@ def _extract_text_facts(text: str, source_label: str, source_ref: Optional[str])
         val2 = float(match.group(2)) if match.group(2) else val1
         max_val = max(val1, val2)
         unit = match.group(3).lower()
-        # Convert knots to km/h if needed
         if "knot" in unit:
             max_val = round(max_val * 1.852, 1)
 
@@ -88,7 +87,6 @@ def _extract_text_facts(text: str, source_label: str, source_ref: Optional[str])
     # 2. Wave height (e.g. "3.5 to 5.2 meters", "waves of 4.0 m")
     wave_pattern = re.compile(r'(\d+(?:\.\d+)?)\s*(?:-|to)?\s*(\d+(?:\.\d+)?)?\s*(?:m|meters|metres)\s*(?:high|wave|swell)?', re.IGNORECASE)
     for match in wave_pattern.finditer(text):
-        # Ignore if part of rainfall mm or kmh context
         context_window = text[max(0, match.start()-10):min(len(text), match.end()+10)].lower()
         if "mm" in context_window or "km" in context_window or "°" in context_window:
             continue
@@ -122,7 +120,6 @@ def _extract_text_facts(text: str, source_label: str, source_ref: Optional[str])
     temp_pattern = re.compile(r'(\d+(?:\.\d+)?)\s*(?:°C|deg C|degrees C|C\b)', re.IGNORECASE)
     for match in temp_pattern.finditer(text):
         val = float(match.group(1))
-        # Ignore year numbers e.g. 2026C
         if val > 60.0 or val < -30.0:
             continue
         extracted.append({
@@ -147,7 +144,6 @@ def build_factsheet(
     """
     raw_facts: List[Dict[str, Any]] = []
 
-    # Helper function to get attr/item
     def _get(obj: Any, key: str, default: Any = None) -> Any:
         if isinstance(obj, dict):
             return obj.get(key, default)
@@ -198,7 +194,6 @@ def build_factsheet(
 
     # 3. Open-Meteo Data Facts
     if open_meteo_data:
-        # Forecast
         hourly = open_meteo_data.get("hourly", {})
         if "wind_speed_10m" in hourly and hourly["wind_speed_10m"]:
             raw_facts.append({"field": "wind_speed_kmh", "value": max(hourly["wind_speed_10m"]), "source": "Open-Meteo Forecast", "source_ref": "hourly.wind_speed_10m"})
@@ -209,11 +204,9 @@ def build_factsheet(
         if "temperature_2m" in hourly and hourly["temperature_2m"]:
             raw_facts.append({"field": "temperature_c", "value": max(hourly["temperature_2m"]), "source": "Open-Meteo Forecast", "source_ref": "hourly.temperature_2m"})
 
-        # Marine
         if "wave_height" in hourly and hourly["wave_height"]:
             raw_facts.append({"field": "wave_height_m", "value": max(hourly["wave_height"]), "source": "Open-Meteo Marine", "source_ref": "hourly.wave_height"})
 
-        # Flood
         daily = open_meteo_data.get("daily", {})
         if "river_discharge" in daily and daily["river_discharge"]:
             raw_facts.append({"field": "river_discharge_m3s", "value": max(daily["river_discharge"]), "source": "Open-Meteo Flood", "source_ref": "daily.river_discharge"})
@@ -226,7 +219,6 @@ def build_factsheet(
     for item in raw_facts:
         f_field = item["field"]
         f_val = item["value"]
-        # Dedupe identical field+value pairs
         key = (f_field, str(f_val))
         if key in seen_keys:
             continue

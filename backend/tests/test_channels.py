@@ -1,4 +1,4 @@
-from skysafe.channels import send_sms
+from app.channels import send_sms
 
 
 def test_send_sms_channel():
