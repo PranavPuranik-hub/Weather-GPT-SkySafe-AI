@@ -2,8 +2,8 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'SkySafe AI - Disaster Action Intelligence',
-  description: 'Multilingual voice/SMS action intelligence layer for official weather warnings.',
+  title: 'SkySafe AI',
+  description: 'Action-intelligence for disaster management',
   manifest: '/manifest.json',
 };
 
@@ -17,14 +17,29 @@ export const viewport: Viewport = {
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <html lang="en">
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#1e3a8a" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                  }, function(err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                  });
+                });
+              }
+            `,
+          }}
+        />
       </head>
       <body className="antialiased flex flex-col min-h-screen text-slate-100 bg-slate-900 selection:bg-blue-600">
         {/* DRILL / SIMULATION Banner */}

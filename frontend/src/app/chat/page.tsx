@@ -92,10 +92,31 @@ export default function ChatPage() {
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
+  const [isOffline, setIsOffline] = useState(false);
+  const [isLiteMode, setIsLiteMode] = useState(false);
+
   // Auto scroll to bottom
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get("lite") === "1") {
+        setIsLiteMode(true);
+      }
+      setIsOffline(!navigator.onLine);
+      const handleOnline = () => setIsOffline(false);
+      const handleOffline = () => setIsOffline(true);
+      window.addEventListener('online', handleOnline);
+      window.addEventListener('offline', handleOffline);
+      return () => {
+        window.removeEventListener('online', handleOnline);
+        window.removeEventListener('offline', handleOffline);
+      };
+    }
+  }, []);
 
   useEffect(() => {
     scrollToBottom();
@@ -413,6 +434,11 @@ async function apiFetch(path: string, init?: RequestInit): Promise<Response> {
 
   return (
     <div className="flex flex-col h-[calc(100vh-80px)] max-w-2xl mx-auto bg-slate-950 rounded-2xl border border-slate-800 shadow-2xl overflow-hidden font-sans">
+      {isOffline && (
+        <div className="bg-red-900/80 text-white text-xs font-bold text-center py-1 flex items-center justify-center gap-1">
+          <AlertCircle className="w-3 h-3" /> NO INTERNET - OFFLINE MODE (Messages will be queued)
+        </div>
+      )}
       {/* WhatsApp-Style Top App Bar */}
       <div className="bg-slate-900 border-b border-slate-800 p-3 flex items-center justify-between z-10 shrink-0">
         <div className="flex items-center gap-3">
@@ -783,19 +809,23 @@ async function apiFetch(path: string, init?: RequestInit): Promise<Response> {
       )}
 
       {/* Claim Ledger Proof Drawer */}
-      <ClaimLedgerDrawer
-        isOpen={isLedgerOpen}
-        onClose={() => setIsLedgerOpen(false)}
-        ledger={selectedLedger}
-      />
+      {!isLiteMode && (
+        <ClaimLedgerDrawer
+          isOpen={isLedgerOpen}
+          onClose={() => setIsLedgerOpen(false)}
+          ledger={selectedLedger}
+        />
+      )}
 
       {/* Dev Panel for simulating incoming alerts & SLA latency */}
-      <DevPanel
-        onSimulatedAlert={handleSimulatedAlert}
-        currentDistrict={location}
-        currentLang={language}
-        currentPersona={persona}
-      />
+      {!isLiteMode && (
+        <DevPanel
+          onSimulatedAlert={handleSimulatedAlert}
+          currentDistrict={location}
+          currentLang={language}
+          currentPersona={persona}
+        />
+      )}
     </div>
   );
 }

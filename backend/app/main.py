@@ -18,6 +18,7 @@ from app.api import (
 )
 from app.api.reports import router as reports_router
 from app.api.decision import router as decision_router
+from app.api.sms import router as sms_router
 from app.core.config import settings
 from app.core.db import Base, engine
 from app.ingest.scheduler import start_ingest_scheduler, stop_ingest_scheduler
@@ -70,7 +71,7 @@ app.include_router(languages_router)
 app.include_router(chat_router)
 app.include_router(reports_router)
 app.include_router(decision_router)
-
+app.include_router(sms_router)
 
 @app.get("/")
 def root():

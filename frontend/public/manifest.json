@@ -1,19 +1,19 @@
 {
-  "name": "SkySafe AI - Disaster Action Intelligence",
+  "name": "SkySafe AI",
   "short_name": "SkySafe",
-  "description": "Life-saving weather actions and disaster command dashboard.",
+  "description": "Action-intelligence for disaster management",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#1e3a8a",
+  "background_color": "#020617",
+  "theme_color": "#020617",
   "icons": [
     {
-      "src": "/icon-192.png",
+      "src": "/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
