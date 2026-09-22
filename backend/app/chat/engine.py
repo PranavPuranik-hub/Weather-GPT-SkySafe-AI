@@ -8,6 +8,9 @@ import logging
 import uuid
 from typing import Dict, Any, List, Optional, Tuple
 
+from sqlalchemy.orm import Session
+from app.reports.service import submit_report, classify_report_category
+
 from app.chat.models import ChatRequest, ChatResponse, OnboardingRequest, OnboardingResponse
 from app.chat.router import classify_intent
 from app.chat.geocoding import resolve_location, SEEDED_LOCATIONS
@@ -100,7 +103,7 @@ def process_onboarding(req: OnboardingRequest) -> OnboardingResponse:
     )
 
 
-def handle_chat_message(req: ChatRequest) -> ChatResponse:
+def handle_chat_message(req: ChatRequest, db: Session = None) -> ChatResponse:
     """
     Main conversational agent handler.
     Follows: Router -> Tool Execution -> FactSheet -> Composition -> Grounding Validator.
@@ -195,17 +198,44 @@ def handle_chat_message(req: ChatRequest) -> ChatResponse:
 
     # 4. Incident Reporting
     if intent == "report_incident":
-        if lang == "hi":
-            msg = f"धन्यवाद। {loc['district']} में आपकी रिपोर्ट दर्ज कर ली गई है और स्थानीय आपदा प्रतिक्रिया दल को प्रेषित कर दी गई है।"
-            replies = ["निकटतम आश्रय 🏠", "सुरक्षा निर्देश 🛡️"]
-        elif lang == "or":
-            msg = f"ଧନ୍ୟବାଦ। {loc['district']} ରେ ଆପଣଙ୍କ ରିପୋର୍ଟ ଗ୍ରହଣ କରାଗଲା ଏବଂ ସ୍ଥାନୀୟ ପ୍ରଶାସନକୁ ପଠାଗଲା।"
-            replies = ["ନିକଟତମ ଆଶ୍ରୟ 🏠", "ସୁରକ୍ଷା ନିର୍ଦ୍ଦେଶ 🛡️"]
+        category = classify_report_category(req.message)
+        tools_called.append("submit_report")
+        if db:
+            user_hash = session.get("phone_hash") or session["user_id"]
+            ward_id = loc['district']
+            if "ward 7" in req.message.lower():
+                ward_id = "Ward 7"
+            submit_report(
+                db=db,
+                text=req.message,
+                lat=loc['lat'],
+                lon=loc['lon'],
+                user_hash=user_hash,
+                ward_id=ward_id
+            )
+        
+        if category == "Need Help":
+            if lang == "hi":
+                msg = f"आपकी आपातकालीन सहायता का अनुरोध {loc['district']} अधिकारियों को प्राथमिकता पर भेज दिया गया है। निकटतम आश्रय और बचाव टीम सतर्क हैं। हेल्पलाइन 1077 डायल करें।"
+                replies = ["निकटतम आश्रय 🏠", "मुझे क्या करना चाहिए? 🛡️"]
+            elif lang == "or":
+                msg = f"ଆପଣଙ୍କର ଜରୁରୀକାଳୀନ ସାହାଯ୍ୟ ଅନୁରୋଧ {loc['district']} ଅଧିକାରୀମାନଙ୍କୁ ପ୍ରାଥମିକତା ଭିତ୍ତିରେ ପଠାଯାଇଛି। ନିକଟତମ ଆଶ୍ରୟସ୍ଥଳ ଏବଂ ଉଦ୍ଧାରକାରୀ ଦଳ ସତର୍କ ଅଛନ୍ତି। 1077 ଡାଏଲ୍ କରନ୍ତୁ।"
+                replies = ["ନିକଟତମ ଆଶ୍ରୟ 🏠", "ମୁଁ କଣ କରିବି? 🛡️"]
+            else:
+                msg = f"URGENT: Your request for help in {loc['district']} has been prioritized to local officers. Rescue teams are on alert. Dial 1077 or move to nearest shelter."
+                replies = ["Nearest Shelter 🏠", "Action Advice 🛡️"]
         else:
-            msg = f"Thank you. Your incident report for {loc['district']} has been logged and shared with the local emergency response authorities."
-            replies = ["Nearest Shelter 🏠", "Action Advice 🛡️"]
+            if lang == "hi":
+                msg = f"धन्यवाद। {loc['district']} में आपकी रिपोर्ट (श्रेणी: {category}) दर्ज कर ली गई है और स्थानीय आपदा प्रतिक्रिया दल को प्रेषित कर दी गई है।"
+                replies = ["निकटतम आश्रय 🏠", "सुरक्षा निर्देश 🛡️"]
+            elif lang == "or":
+                msg = f"ଧନ୍ୟବାଦ। {loc['district']} ରେ ଆପଣଙ୍କ ରିପୋର୍ଟ (ବର୍ଗ: {category}) ଗ୍ରହଣ କରାଗଲା ଏବଂ ସ୍ଥାନୀୟ ପ୍ରଶାସନକୁ ପଠାଗଲା।"
+                replies = ["ନିକଟତମ ଆଶ୍ରୟ 🏠", "ସୁରକ୍ଷା ନିର୍ଦ୍ଦେଶ 🛡️"]
+            else:
+                msg = f"Thank you. Your incident report ({category}) for {loc['district']} has been logged and shared with the local emergency response authorities."
+                replies = ["Nearest Shelter 🏠", "Action Advice 🛡️"]
 
-        return _build_response(session_id, msg, "report_incident", [], loc, replies, lang=lang)
+        return _build_response(session_id, msg, "report_incident", tools_called, loc, replies, lang=lang)
 
     # 5. Current Alert Here
     if intent == "current_alert":

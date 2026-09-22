@@ -1,7 +1,31 @@
+"use client";
+
 import Link from 'next/link';
 import { ArrowLeft, Activity, Users, Truck, AlertTriangle } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 export default function DashboardPage() {
+  const [wardState, setWardState] = useState("Predicted");
+
+  useEffect(() => {
+    const eventSource = new EventSource('http://localhost:8000/api/reports/ward_state_stream');
+
+    eventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.ward_id === "Ward 7") {
+          setWardState(data.state);
+        }
+      } catch (e) {
+        console.error("SSE parse error", e);
+      }
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, []);
+
   return (
     <div className="space-y-6 py-4">
       <div className="flex items-center justify-between">
@@ -46,6 +70,39 @@ export default function DashboardPage() {
             <Activity className="w-4 h-4" /> System Health
           </div>
           <p className="text-2xl font-bold text-emerald-400">100%</p>
+        </div>
+      </div>
+
+      {/* Ward Status Monitor */}
+      <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5 space-y-3 shadow-xl">
+        <h2 className="text-lg font-bold text-white">Live Ward Status (Zero-Trust Cluster)</h2>
+        <div className="flex items-center gap-4">
+          <div className="bg-slate-900 border border-slate-700 rounded-lg p-4 flex-1">
+            <h3 className="text-sm font-semibold text-slate-300">Ward 7</h3>
+            <p className="text-xs text-slate-500">Incoming Citizen Reports</p>
+          </div>
+          <div className="text-white font-bold text-xl">
+             -&gt; 
+          </div>
+          <div className={`border rounded-lg p-4 flex-1 text-center font-bold transition-colors duration-500 ${wardState === 'Confirmed' ? 'bg-red-900/50 border-red-500 text-red-400' : wardState === 'Reported' ? 'bg-amber-900/50 border-amber-500 text-amber-400' : 'bg-slate-800 border-slate-600 text-slate-300'}`}>
+            {wardState.toUpperCase()}
+          </div>
+        </div>
+        <div className="flex items-center justify-between mt-2">
+          <p className="text-xs text-slate-400">Status auto-elevates when 3+ independent citizens report from the same area.</p>
+          <button 
+            onClick={() => {
+              setWardState("Predicted");
+              fetch('http://localhost:8000/api/reports/simulate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ward_id: "Ward 7", count: 5, text: "Water entered my home" })
+              });
+            }}
+            className="text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white py-1.5 px-3 rounded-lg shadow-sm transition-colors"
+          >
+            Trigger Simulation
+          </button>
         </div>
       </div>
 

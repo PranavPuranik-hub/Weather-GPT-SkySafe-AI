@@ -16,6 +16,7 @@ from app.api import (
     languages_router,
     chat_router,
 )
+from app.api.reports import router as reports_router
 from app.core.config import settings
 from app.core.db import Base, engine
 from app.ingest.scheduler import start_ingest_scheduler, stop_ingest_scheduler
@@ -66,6 +67,7 @@ app.include_router(compose_router)
 app.include_router(voice_router)
 app.include_router(languages_router)
 app.include_router(chat_router)
+app.include_router(reports_router)
 
 
 @app.get("/")

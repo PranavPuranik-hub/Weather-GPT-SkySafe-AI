@@ -40,3 +40,10 @@ def check_db_health() -> bool:
     except Exception as exc:
         logger.warning(f"Database healthcheck failed: {exc}")
         return False
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

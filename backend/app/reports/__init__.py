@@ -1,7 +1,21 @@
 """
-Reports package: Automated bulletin & Situation Report (SitRep) generator.
+Reports package: Automated bulletin & Situation Report (SitRep) generator, and Citizen Report clustering.
 """
 
-def generate_sitrep(district: str) -> str:
-    """Generate markdown/PDF situation report for officials."""
-    return f"# Situation Report - {district}\nStatus: DRILL / SIMULATION\n"
+from .service import (
+    generate_sitrep,
+    submit_report,
+    process_clustering,
+    classify_report_category,
+    broadcast_ward_state,
+    SSE_CLIENTS
+)
+
+__all__ = [
+    "generate_sitrep",
+    "submit_report",
+    "process_clustering",
+    "classify_report_category",
+    "broadcast_ward_state",
+    "SSE_CLIENTS"
+]

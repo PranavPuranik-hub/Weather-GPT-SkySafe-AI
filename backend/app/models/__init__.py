@@ -9,6 +9,8 @@ from sqlalchemy import Boolean, Column, DateTime, Float, Integer, String, Text
 from app.core.db import Base
 
 
+from app.models.reports import Report, WardState, WardStateEnum
+
 class Alert(Base):
     """
     Normalized CAP 1.2 Alert Model storing parsed official alerts and drill exercises.

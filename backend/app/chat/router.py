@@ -45,9 +45,9 @@ INTENT_PATTERNS = {
         r'(କଣ\s+କରିବା\s+ଉଚିତ|ଏବେ\s+କଣ\s+କରିବି|ପରାମର୍ଶ|ସତର୍କତା)',
     ],
     "report_incident": [
-        r'\b(report|incident|waterlogging|waterlogged|tree\s+fall|fallen\s+tree|road\s+blocked|power\s+outage|wire\s+cut|damage)\b',
+        r'\b(report|incident|waterlogging|waterlogged|tree\s+fall|fallen\s+tree|road\s+blocked|power\s+outage|wire\s+cut|damage|help|rescue|boat|stuck)\b',
         # Hindi
-        r'(घटना\s+की\s+रिपोर्ट|जलभराव|पेड़\s+गिर\s+गया|सड़क\s+बंद|बिजली\s+गुल|खंभा\s+गिरा)',
+        r'(घटना\s+की\s+रिपोर्ट|जलभराव|पेड़\s+गिर\s+गया|सड़क\s+बंद|बिजली\s+गुल|खंभा\s+गिरा|मदद|बचाव)',
         # Odia
         r'(ଜଳବନ୍ଦୀ|ଗଛ\s+ପଡିଯାଇଛି|ରାସ୍ତା\s+ଅବରୋଧ|ରିପୋର୍ଟ\s+କରନ୍ତୁ)',
     ],

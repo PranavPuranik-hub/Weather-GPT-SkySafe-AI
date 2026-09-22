@@ -3,6 +3,7 @@ Chat API Router for Citizen Conversational Weather & Disaster Assistant.
 """
 from typing import Dict, Any, Optional
 from fastapi import APIRouter, HTTPException, Depends
+from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
 
 from app.chat.models import (
@@ -36,10 +37,12 @@ def onboard_citizen(req: OnboardingRequest):
     return process_onboarding(req)
 
 
+from app.core.db import SessionLocal, get_db
+
 @chat_router.post("/message", response_model=ChatResponse)
-def send_message(req: ChatRequest):
+def send_message(req: ChatRequest, db: Session = Depends(get_db)):
     """Process incoming citizen chat message with deterministic tool grounding."""
-    return handle_chat_message(req)
+    return handle_chat_message(req, db=db)
 
 
 @chat_router.post("/report")
