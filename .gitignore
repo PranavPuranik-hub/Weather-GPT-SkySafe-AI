@@ -37,6 +37,8 @@ htmlcov/
 *.sqlite3
 skysafe_test.db
 backend/skysafe_test.db
+backend/data/audio_cache/
+data/audio_cache/
 
 # Environments
 .env

@@ -11,21 +11,21 @@
 
 ### 2026-09-21 - Prompt 1: Monorepo Setup
 - Initialized directory structure: `backend`, `frontend`, `data`, `docs`, `scripts`.
-- Configured FastAPI application `skysafe` with pydantic-settings and `/health` endpoint.
+- Configured FastAPI application `app` with pydantic-settings and `/health` endpoint.
 - Built Next.js 14 PWA placeholder with mobile-first landing page and route links for Citizen view and Command dashboard.
 - Configured PostgreSQL / PostGIS container service, Makefile targets (`up`, `down`, `test`, `lint`, `seed`, `demo`), and environment variables template.
 ### 2026-09-21 - Prompt 1 Fix: PostgreSQL Driver Dependency
 - Added `psycopg2-binary>=2.9.9` dependency to `backend/requirements.txt` and `backend/pyproject.toml`.
 - Added unit test `test_postgres_driver_import` to verify `postgresql://` URI engine initialization.
 ### 2026-09-21 - Prompt 1 Fix: /health Routing Resolution
-- Resolved FastAPI empty path/prefix collision in `skysafe/api/health.py` by configuring explicit `/health` and `/health/` decorators on `health_router`.
+- Resolved FastAPI empty path/prefix collision in `app/api/health.py` by configuring explicit `/health` and `/health/` decorators on `health_router`.
 - Verified GET `/health` and GET `/health/` return HTTP 200 with required JSON payload keys (`status`, `database`, `last_sachet_fetch`, `last_open_meteo_fetch`, `llm_provider`, `mode`).
 ### 2026-09-21 - Prompt 1 Fix: Docker Port Binding
 - Updated `docker-compose.yml` backend service port mapping from `"8000:8000"` to `"0.0.0.0:8000:8000"`.
 - Explicitly configured host binding so container port 8000 maps to `0.0.0.0:8000->8000/tcp`.
 - All 16 backend unit tests pass.
 
-### 2026-09-21 - Ingestion Layer (`skysafe/ingest`)
+### 2026-09-21 - Ingestion Layer (`app/ingest`)
 - Built resilient XML CAP 1.2 parser in `cap_parser.py` extracting identifier, status, note, info, area polygon, and GeoJSON geometry.
 - Built NDMA SACHET RSS client (`sachet_client.py`) and IMD adapter (`imd_client.py`) with retry backoff and offline fixtures fallback.
 - Implemented `OpenMeteoClient` (`open_meteo.py`) with typed models for forecast, marine, flood, and historical archive APIs with 15-minute in-memory caching and cached fallback.
@@ -52,6 +52,27 @@
 - Built CLI demo simulator (`app/core/demo.py`) supporting `--scenario cyclone`, `--scenario flood`, and `--scenario heatwave`.
 - Created comprehensive unit test suite in `backend/tests/core/` (`test_factsheet.py`, `test_grade.py`, `test_rules.py`, `test_fisherman_rule.py`, `test_demo.py`).
 - Created root `app` package layout enabling `python -m app.core.demo --scenario cyclone` directly from the repository root.
-- All 147 backend unit tests passing cleanly (`pytest backend/tests -q`).
+### 2026-09-22 - Prompt 4: Grounded LLM Generation & Adversarial Grounding Validator
+- Built pluggable LLM layer `app/llm` (Ollama, Gemini, TemplateClient) with deterministic provider fallback chain and Gemini as default.
+- Implemented deterministic Grounding Validator in `app/validator` with Indic numeral normalizer, unit fuzzy-matching, action negation preservation, and hallucination detection.
+- Built generation pipeline `app/pipeline/composer.py` (`generate -> validate -> retry (max 2) -> fallback`).
+- Implemented `POST /api/compose` endpoint returning grounded plain-language text, voice script, and `ClaimLedger`.
+- Built 52-case adversarial test suite `tests/validator/test_adversarial.py` achieving 100% catch rate via `python -m app.validator.report`.
+
+### 2026-09-22 - Prompt 5: Multilingual Language Registry & Voice Notes
+- Configured 17-language registry in `backend/app/lang/languages.yaml` with language metadata, scripts, RTL flags, TTS voices, and `verified` filtering (`get_verified_languages()` shown by default in UI).
+- Implemented native Indic digit rendering in `app/lang/digits.py` for target scripts (Devanagari, Bengali, Odia, Telugu, Tamil, Marathi, Gujarati, etc.).
+- Implemented telecom-compliant SMS budgeting in `app/lang/sms.py` (GSM-7 <= 160 chars, Unicode <= 201 chars / <= 3 segments).
+- Built deterministic per-language template packs in `app/lang/templates/pack.py` with localized templates and fact slots.
+- Implemented `TranslationService` in `app/lang/translator.py` with provider hierarchy: Sarvam AI (if API key) -> Deterministic Template Packs -> English fallback.
+- Enforced strict Grounding Validation on all translated text: numeric tokens (normalized across Indic digits) and place names must match source FactSheet; ungrounded/altered translations are rejected.
+- Implemented Voice synthesis service in `app/voice/synthesizer.py` with TTS chain: Sarvam TTS -> Edge-TTS -> gTTS -> browser speechSynthesis fallback.
+- Added emergency broadcast two-tone alert chime in `app/voice/chime.py` and voice note caching by SHA256(text, lang, voice) with <= 30s duration and < 200 KB size guarantee.
+- Implemented API endpoints in `app/api/voice.py`:
+  - `POST /api/voice`: generates localized, grounded voice notes returning audio URL, transcript, SMS text, and ClaimLedger.
+  - `GET /api/voice/audio/{filename}`: serves cached audio files.
+  - `GET /api/languages`: lists verified languages (or all 17 when `?all=true`).
+- Added comprehensive test suite `tests/test_lang_and_voice.py` verifying 7 languages across 3 scenarios, audio <= 30s, and proving that any translation altering a numeral is strictly rejected.
+- All 225 backend unit tests passing cleanly (`pytest tests/ -q`).
 
 

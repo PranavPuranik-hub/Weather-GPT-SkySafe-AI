@@ -3,18 +3,18 @@ version: '3.8'
 services:
   postgres:
     image: postgis/postgis:15-3.3
-    container_name: skysafe-postgres
+    container_name: app-postgres
     restart: always
     environment:
-      POSTGRES_DB: skysafe
-      POSTGRES_USER: skysafe
-      POSTGRES_PASSWORD: skysafe
+      POSTGRES_DB: app
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
     ports:
       - "0.0.0.0:5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U skysafe -d skysafe"]
+      test: ["CMD-SHELL", "pg_isready -U app -d app"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -23,12 +23,12 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: skysafe-backend
+    container_name: app-backend
     restart: always
     ports:
       - "0.0.0.0:8001:8000"
     environment:
-      DATABASE_URL: postgresql://skysafe:skysafe@postgres:5432/skysafe
+      DATABASE_URL: postgresql://app:app@postgres:5432/app
       LLM_PROVIDER: ${LLM_PROVIDER:-null}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       GROQ_API_KEY: ${GROQ_API_KEY:-}
@@ -50,7 +50,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: skysafe-frontend
+    container_name: app-frontend
     restart: always
     ports:
       - "0.0.0.0:3000:3000"
@@ -62,7 +62,7 @@ services:
   ollama:
     profiles: ["llm"]
     image: ollama/ollama:latest
-    container_name: skysafe-ollama
+    container_name: app-ollama
     restart: always
     ports:
       - "11434:11434"

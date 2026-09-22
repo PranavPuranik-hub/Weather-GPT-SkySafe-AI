@@ -29,8 +29,8 @@ curl http://localhost:8000/health
 
 ```text
 .
-├── backend/            # FastAPI app ("skysafe")
-│   └── skysafe/
+├── backend/            # FastAPI app ("app")
+│   └── app/
 │       ├── api/        # REST controllers & /health route
 │       ├── core/       # Pydantic settings & DB connection
 │       ├── ingest/     # CAP format, SACHET, Open-Meteo ingestion
@@ -59,7 +59,7 @@ curl http://localhost:8000/health
 
 | Variable | Description | Options / Default |
 | :--- | :--- | :--- |
-| `DATABASE_URL` | PostGIS / SQLite Connection URI | `postgresql://skysafe:skysafe@postgres:5432/skysafe` |
+| `DATABASE_URL` | PostGIS / SQLite Connection URI | `postgresql://app:app@postgres:5432/app` |
 | `LLM_PROVIDER` | Active LLM Backend Driver | `ollama` \| `gemini` \| `groq` \| `null` |
 | `MODE` | Operating mode | `live` \| `fixtures` |
 | `DEMO_DISTRICT`| Default demo district | `Cuttack` |
