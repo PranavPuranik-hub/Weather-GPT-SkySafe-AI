@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<alert xmlns="urn:oasis:names:tc:emergency:cap:1.2">
+  <identifier>SACHET-2026-OD-000-EXP</identifier>
+  <sender>sachet.ndma@gov.in</sender>
+  <sent>2026-09-20T04:00:00+05:30</sent>
+  <status>Exercise</status>
+  <msgType>Cancel</msgType>
+  <scope>Public</scope>
+  <note>DRILL - SIMULATED</note>
+  <info>
+    <language>en</language>
+    <category>Met</category>
+    <event>Cyclone Warning De-escalation</event>
+    <urgency>Past</urgency>
+    <severity>Minor</severity>
+    <certainty>Observed</certainty>
+    <effective>2026-09-20T04:00:00+05:30</effective>
+    <onset>2026-09-20T04:00:00+05:30</onset>
+    <expires>2026-09-20T16:00:00+05:30</expires>
+    <headline>All Clear: Cyclone Warning De-escalated for Coastal Odisha</headline>
+    <description>Cyclonic depression has weakened into a well-marked low-pressure area and moved further inland. Wind speeds have subsided below 35 kmph.</description>
+    <instruction>Evacuees can initiate return in coordination with local village administration. Avoid live wires and stagnant puddle water.</instruction>
+    <area>
+      <areaDesc>Cuttack, Odisha</areaDesc>
+      <polygon>20.35,85.75 20.60,85.80 20.55,86.10 20.30,86.00 20.35,85.75</polygon>
+      <geocode>
+        <valueName>state</valueName>
+        <value>Odisha</value>
+      </geocode>
+      <geocode>
+        <valueName>district</valueName>
+        <value>Cuttack</value>
+      </geocode>
+    </area>
+  </info>
+</alert>

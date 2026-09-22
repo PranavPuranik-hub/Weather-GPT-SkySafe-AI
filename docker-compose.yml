@@ -43,6 +43,7 @@ services:
       postgres:
         condition: service_healthy
     volumes:
+      - ./data:/data
       - ./data:/app/data
 
   frontend:

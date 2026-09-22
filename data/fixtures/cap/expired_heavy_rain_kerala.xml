@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<alert xmlns="urn:oasis:names:tc:emergency:cap:1.2">
+  <identifier>SACHET-2026-KL-000-EXP</identifier>
+  <sender>sachet.ndma@gov.in</sender>
+  <sent>2026-09-20T06:00:00+05:30</sent>
+  <status>Exercise</status>
+  <msgType>Cancel</msgType>
+  <scope>Public</scope>
+  <note>DRILL - SIMULATED</note>
+  <info>
+    <language>en</language>
+    <category>Met</category>
+    <event>Heavy Rainfall Warning Cancellation</event>
+    <urgency>Past</urgency>
+    <severity>Minor</severity>
+    <certainty>Observed</certainty>
+    <effective>2026-09-20T06:00:00+05:30</effective>
+    <onset>2026-09-20T06:00:00+05:30</onset>
+    <expires>2026-09-20T18:00:00+05:30</expires>
+    <headline>All Clear: Rainfall Warning Withdrawn for Wayanad</headline>
+    <description>Rainfall intensity has significantly decreased across Wayanad district. River stages have receded below warning thresholds.</description>
+    <instruction>Citizens may return home with caution after inspecting structures for water damage. Report downed electrical lines to authorities.</instruction>
+    <area>
+      <areaDesc>Wayanad, Kerala</areaDesc>
+      <polygon>11.60,76.08 11.85,76.15 11.75,76.35 11.50,76.25 11.60,76.08</polygon>
+      <geocode>
+        <valueName>state</valueName>
+        <value>Kerala</value>
+      </geocode>
+      <geocode>
+        <valueName>district</valueName>
+        <value>Wayanad</value>
+      </geocode>
+    </area>
+  </info>
+</alert>

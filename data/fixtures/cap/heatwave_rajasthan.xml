@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<alert xmlns="urn:oasis:names:tc:emergency:cap:1.2">
+  <identifier>SACHET-2026-RJ-003</identifier>
+  <sender>sachet.ndma@gov.in</sender>
+  <sent>2026-09-21T08:00:00+05:30</sent>
+  <status>Exercise</status>
+  <msgType>Alert</msgType>
+  <scope>Public</scope>
+  <note>DRILL - SIMULATED</note>
+  <info>
+    <language>en</language>
+    <category>Met</category>
+    <event>Severe Heatwave</event>
+    <urgency>Expected</urgency>
+    <severity>Severe</severity>
+    <certainty>Likely</certainty>
+    <effective>2026-09-21T11:00:00+05:30</effective>
+    <onset>2026-09-21T12:00:00+05:30</onset>
+    <expires>2026-09-22T19:00:00+05:30</expires>
+    <headline>Red Alert: Severe Heatwave Conditions with Temperatures Exceeding 47C in Churu</headline>
+    <description>Maximum day temperatures expected to cross 47 degrees Celsius with severe loo wind conditions. High probability of heat stroke and dehydration among vulnerable population.</description>
+    <instruction>Avoid direct sunlight exposure between 12 PM and 4 PM. Drink ORS, buttermilk, and clean water frequently. Keep domestic animals sheltered and hydrated in cool shaded areas.</instruction>
+    <area>
+      <areaDesc>Churu, Rajasthan</areaDesc>
+      <polygon>28.15,74.80 28.45,75.10 28.25,75.30 27.95,74.95 28.15,74.80</polygon>
+      <geocode>
+        <valueName>state</valueName>
+        <value>Rajasthan</value>
+      </geocode>
+      <geocode>
+        <valueName>district</valueName>
+        <value>Churu</value>
+      </geocode>
+    </area>
+  </info>
+</alert>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<alert xmlns="urn:oasis:names:tc:emergency:cap:1.2">
+  <identifier>SACHET-2026-AP-007</identifier>
+  <sender>sachet.ndma@gov.in</sender>
+  <sent>2026-09-21T17:15:00+05:30</sent>
+  <status>Exercise</status>
+  <msgType>Alert</msgType>
+  <scope>Public</scope>
+  <note>DRILL - SIMULATED</note>
+  <info>
+    <language>en</language>
+    <category>Met</category>
+    <event>Severe Cyclonic Storm</event>
+    <urgency>Expected</urgency>
+    <severity>Severe</severity>
+    <certainty>Likely</certainty>
+    <effective>2026-09-21T18:00:00+05:30</effective>
+    <onset>2026-09-21T20:00:00+05:30</onset>
+    <expires>2026-09-23T12:00:00+05:30</expires>
+    <headline>Orange Alert: Severe Cyclone Approaching North Coastal Andhra Pradesh near Visakhapatnam</headline>
+    <description>Cyclonic storm system tracking northwestward with gale wind speeds reaching 90-110 kmph over Visakhapatnam and Vizianagaram. Extensive uprooting of power poles and damage to thatched huts expected.</description>
+    <instruction>Secure outdoor objects and stay inside sturdy shelters. Fishermen must not venture into the sea. Stock necessary food, medicines, and power banks.</instruction>
+    <area>
+      <areaDesc>Visakhapatnam, Andhra Pradesh</areaDesc>
+      <polygon>17.60,83.15 17.85,83.35 17.75,83.55 17.50,83.25 17.60,83.15</polygon>
+      <geocode>
+        <valueName>state</valueName>
+        <value>Andhra Pradesh</value>
+      </geocode>
+      <geocode>
+        <valueName>district</valueName>
+        <value>Visakhapatnam</value>
+      </geocode>
+    </area>
+  </info>
+</alert>

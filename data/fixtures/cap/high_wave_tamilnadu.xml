@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<alert xmlns="urn:oasis:names:tc:emergency:cap:1.2">
+  <identifier>SACHET-2026-TN-005</identifier>
+  <sender>sachet.ndma@gov.in</sender>
+  <sent>2026-09-21T16:00:00+05:30</sent>
+  <status>Exercise</status>
+  <msgType>Alert</msgType>
+  <scope>Public</scope>
+  <note>DRILL - SIMULATED</note>
+  <info>
+    <language>en</language>
+    <category>Met</category>
+    <event>High Wave and Rough Sea Fishermen Warning</event>
+    <urgency>Immediate</urgency>
+    <severity>Severe</severity>
+    <certainty>Observed</certainty>
+    <effective>2026-09-21T16:00:00+05:30</effective>
+    <onset>2026-09-21T17:00:00+05:30</onset>
+    <expires>2026-09-23T06:00:00+05:30</expires>
+    <headline>Red Alert: High Swell Waves and Rough Sea Surge along Tamil Nadu Coast</headline>
+    <description>High swell waves in the range of 3.5 to 5.2 meters forecast along coastal Chennai and Ramanathapuram. Spring tide conditions will exacerbate coastal erosion and seawater inundation.</description>
+    <instruction>Total suspension of fishing operations along Tamil Nadu coast. Fishermen out at deep sea are advised to return to nearest safe harbor immediately. Secure small boats and trawlers well above high-tide mark.</instruction>
+    <area>
+      <areaDesc>Chennai, Tamil Nadu</areaDesc>
+      <polygon>12.90,80.15 13.20,80.25 13.15,80.35 12.85,80.25 12.90,80.15</polygon>
+      <geocode>
+        <valueName>state</valueName>
+        <value>Tamil Nadu</value>
+      </geocode>
+      <geocode>
+        <valueName>district</valueName>
+        <value>Chennai</value>
+      </geocode>
+    </area>
+  </info>
+</alert>

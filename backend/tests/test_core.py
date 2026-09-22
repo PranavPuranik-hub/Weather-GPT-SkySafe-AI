@@ -1,6 +1,7 @@
 from skysafe.core.config import settings
 from skysafe.core.db import check_db_health
 
+
 def test_core_settings():
     assert settings.PROJECT_NAME == "SkySafe AI"
     assert settings.MODE in ["live", "fixtures"]

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<alert xmlns="urn:oasis:names:tc:emergency:cap:1.2">
+  <identifier>SACHET-2026-UK-006</identifier>
+  <sender>sachet.ndma@gov.in</sender>
+  <sent>2026-09-21T14:30:00+05:30</sent>
+  <status>Exercise</status>
+  <msgType>Alert</msgType>
+  <scope>Public</scope>
+  <note>DRILL - SIMULATED</note>
+  <info>
+    <language>en</language>
+    <category>Geo</category>
+    <event>High Risk Landslide and Mudflow Hazard</event>
+    <urgency>Immediate</urgency>
+    <severity>Severe</severity>
+    <certainty>Observed</certainty>
+    <effective>2026-09-21T14:30:00+05:30</effective>
+    <onset>2026-09-21T15:00:00+05:30</onset>
+    <expires>2026-09-22T20:00:00+05:30</expires>
+    <headline>Red Warning: Slope Failure and Debris Mudflow Hazard along Alaknanda Valley in Chamoli</headline>
+    <description>Continuous torrential rainfall leading to extreme soil saturation on steep mountain slopes. Imminent threat of major debris flow and highway blockage along Badrinath National Highway in Chamoli district.</description>
+    <instruction>Halt all vehicular movement along hill routes. Inhabitants of downstream riverbank settlements and unstable slope zones must relocate to designated emergency shelters immediately.</instruction>
+    <area>
+      <areaDesc>Chamoli, Uttarakhand</areaDesc>
+      <polygon>30.30,79.25 30.60,79.50 30.45,79.75 30.15,79.40 30.30,79.25</polygon>
+      <geocode>
+        <valueName>state</valueName>
+        <value>Uttarakhand</value>
+      </geocode>
+      <geocode>
+        <valueName>district</valueName>
+        <value>Chamoli</value>
+      </geocode>
+    </area>
+  </info>
+</alert>

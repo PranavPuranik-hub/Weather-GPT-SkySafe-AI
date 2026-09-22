@@ -1,0 +1,23 @@
+{
+  "latitude": 13.08,
+  "longitude": 80.27,
+  "generationtime_ms": 0.32,
+  "utc_offset_seconds": 19800,
+  "timezone": "Asia/Kolkata",
+  "timezone_abbreviation": "IST",
+  "hourly_units": {
+    "time": "iso8601",
+    "wave_height": "m",
+    "wave_period": "s",
+    "wind_wave_height": "m"
+  },
+  "hourly": {
+    "time": [
+      "2026-09-21T00:00", "2026-09-21T03:00", "2026-09-21T06:00", "2026-09-21T09:00",
+      "2026-09-21T12:00", "2026-09-21T15:00", "2026-09-21T18:00", "2026-09-21T21:00"
+    ],
+    "wave_height": [2.1, 2.5, 3.2, 4.0, 4.8, 5.2, 4.9, 4.1],
+    "wave_period": [8.2, 9.1, 10.5, 12.0, 13.4, 14.1, 13.2, 11.8],
+    "wind_wave_height": [1.4, 1.8, 2.5, 3.2, 4.0, 4.4, 3.9, 3.1]
+  }
+}

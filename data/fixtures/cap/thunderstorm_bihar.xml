@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<alert xmlns="urn:oasis:names:tc:emergency:cap:1.2">
+  <identifier>SACHET-2026-BR-004</identifier>
+  <sender>sachet.ndma@gov.in</sender>
+  <sent>2026-09-21T15:00:00+05:30</sent>
+  <status>Exercise</status>
+  <msgType>Alert</msgType>
+  <scope>Public</scope>
+  <note>DRILL - SIMULATED</note>
+  <info>
+    <language>en</language>
+    <category>Met</category>
+    <event>Severe Thunderstorm and Lightning Strike Warning</event>
+    <urgency>Immediate</urgency>
+    <severity>Severe</severity>
+    <certainty>Observed</certainty>
+    <effective>2026-09-21T15:00:00+05:30</effective>
+    <onset>2026-09-21T15:30:00+05:30</onset>
+    <expires>2026-09-22T02:00:00+05:30</expires>
+    <headline>Orange Alert: Moderate to Severe Thunderstorms with Frequent Cloud-to-Ground Lightning in Patna</headline>
+    <description>Active convective storm cluster moving eastward producing frequent cloud-to-ground lightning, gusty squall winds of 50-60 kmph, and intense rain bursts across Patna district.</description>
+    <instruction>Take immediate shelter inside permanent pucca buildings. Avoid taking shelter under isolated trees, metal sheds, or mobile towers. Farmers are advised to suspend agricultural operations immediately.</instruction>
+    <area>
+      <areaDesc>Patna, Bihar</areaDesc>
+      <polygon>25.50,85.00 25.75,85.25 25.60,85.45 25.35,85.15 25.50,85.00</polygon>
+      <geocode>
+        <valueName>state</valueName>
+        <value>Bihar</value>
+      </geocode>
+      <geocode>
+        <valueName>district</valueName>
+        <value>Patna</value>
+      </geocode>
+    </area>
+  </info>
+</alert>

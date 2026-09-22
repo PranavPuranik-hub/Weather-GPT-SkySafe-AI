@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<alert xmlns="urn:oasis:names:tc:emergency:cap:1.2">
+  <identifier>SACHET-2026-OD-002</identifier>
+  <sender>sachet.ndma@gov.in</sender>
+  <sent>2026-09-21T19:00:00+05:30</sent>
+  <status>Exercise</status>
+  <msgType>Alert</msgType>
+  <scope>Public</scope>
+  <note>DRILL - SIMULATED</note>
+  <info>
+    <language>en</language>
+    <category>Met</category>
+    <event>Very Severe Cyclonic Storm</event>
+    <urgency>Immediate</urgency>
+    <severity>Extreme</severity>
+    <certainty>Observed</certainty>
+    <effective>2026-09-21T19:00:00+05:30</effective>
+    <onset>2026-09-21T21:00:00+05:30</onset>
+    <expires>2026-09-23T18:00:00+05:30</expires>
+    <headline>Red Warning: Very Severe Cyclone Approaching Odisha Coast near Cuttack and Puri</headline>
+    <description>Severe cyclonic storm with sustained wind speeds of 120-140 kmph gusting to 155 kmph expected to make landfall along coastal Odisha. Heavy to very heavy precipitation and tidal surge expected.</description>
+    <instruction>Evacuate kutcha houses and coastal areas immediately. Relocate to cyclone shelters. Disconnect power mains before flooding occurs. Do not venture outdoors during calm eye passage.</instruction>
+    <area>
+      <areaDesc>Cuttack, Odisha</areaDesc>
+      <polygon>20.35,85.75 20.60,85.80 20.55,86.10 20.30,86.00 20.35,85.75</polygon>
+      <geocode>
+        <valueName>state</valueName>
+        <value>Odisha</value>
+      </geocode>
+      <geocode>
+        <valueName>district</valueName>
+        <value>Cuttack</value>
+      </geocode>
+    </area>
+  </info>
+</alert>

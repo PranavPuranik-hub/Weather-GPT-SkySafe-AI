@@ -2,15 +2,16 @@
 Database connection and session factory with SQLite fallback.
 """
 import logging
+
 from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker, DeclarativeBase
+from sqlalchemy.orm import DeclarativeBase, sessionmaker
+
 from skysafe.core.config import settings
 
 logger = logging.getLogger("skysafe.db")
 
 class Base(DeclarativeBase):
     """Base class for ORM models."""
-    pass
 
 db_url = settings.DATABASE_URL or "sqlite:///./skysafe_test.db"
 

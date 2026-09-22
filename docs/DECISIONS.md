@@ -16,3 +16,9 @@
 - **Context**: UX requirement for Rs 5,000 low-cost Android phones with spotty internet connectivity.
 - **Decision**: Next.js App Router with custom web manifest (`public/manifest.json`) and service worker (`public/sw.js`) for offline asset caching and low bandwidth resilience.
 - **Consequences**: Offline capability for critical action advisories.
+
+### ADR 004: Ingestion Redundancy and Geometry Storage
+- **Context**: Official government feeds (NDMA SACHET, IMD) may face intermittent downtime or slow responses during active cyclone/monsoon events. Tests run on SQLite where SpatiaLite is not guaranteed.
+- **Decision**: Primary ingestion queries NDMA SACHET RSS, with automatic fallback and secondary redundancy from IMD RSS. Offline demo uses `/data/fixtures/cap/*.xml`. Geometry is parsed from `<polygon>` coordinates and stored as standardized GeoJSON in a `geometry` column, ensuring 100% interoperability across PostGIS in production and SQLite in automated testing.
+- **Consequences**: Zero ingestion downtime, honest alert-to-ingest lag tracking, fully functional offline demo mode.
+

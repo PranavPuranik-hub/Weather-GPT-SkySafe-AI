@@ -1,5 +1,6 @@
 from skysafe.models import Alert
 
+
 def test_alert_model():
     alert = Alert(
         alert_id="TEST-001",

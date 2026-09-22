@@ -3,6 +3,7 @@ Agent package: Pluggable LLMProvider interface and drivers (Ollama, Gemini, Groq
 """
 from abc import ABC, abstractmethod
 
+
 class LLMProvider(ABC):
     @abstractmethod
     def generate(self, prompt: str) -> str:
