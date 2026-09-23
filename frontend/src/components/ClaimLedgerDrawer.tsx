@@ -133,7 +133,7 @@ export default function ClaimLedgerDrawer({ isOpen, onClose, ledger }: ClaimLedg
                     </p>
                     <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-slate-700/50">
                       <span className="text-[11px] text-slate-400">Cited Facts:</span>
-                      {item.cited_fact_ids && item.cited_fact_ids.length > 0 ? (
+                      {item.cited_fact_ids && item.cited_fact_ids?.length > 0 ? (
                         item.cited_fact_ids.map((fid) => (
                           <span key={fid} className="px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 font-mono text-[10px] font-bold">
                             {fid}

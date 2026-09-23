@@ -131,10 +131,10 @@ export default function CommandPage() {
           <div className="p-4 border-b border-slate-800">
             <h2 className="text-lg font-bold text-white mb-3">Resource Optimizer</h2>
             <div className="space-y-4">
-              {state.allocations.length === 0 ? (
+              {state.allocations?.length === 0 ? (
                 <p className="text-sm text-emerald-400">All high-risk wards are currently resourced.</p>
               ) : (
-                state.allocations.map((alloc: any, idx: number) => (
+                state.allocations?.map((alloc: any, idx: number) => (
                   <div key={idx} className="bg-slate-800 rounded-lg p-3 border border-slate-700">
                     <p className="text-sm font-semibold text-white mb-2">
                       {idx + 1}. Send {alloc.qty} {alloc.resource_type} from {alloc.depot_name} to {alloc.ward_name}

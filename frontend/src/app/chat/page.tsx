@@ -383,7 +383,7 @@ async function apiFetch(path: string, init?: RequestInit): Promise<Response> {
         };
         setMessages((prev) => [...prev, botMsg]);
 
-        if (data.quick_replies && data.quick_replies.length > 0) {
+        if (data.quick_replies && data.quick_replies?.length > 0) {
           setQuickReplies(data.quick_replies);
         }
       } else {
