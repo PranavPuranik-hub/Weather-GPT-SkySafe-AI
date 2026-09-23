@@ -4,6 +4,7 @@ NDMA SACHET RSS Feed and CAP XML Fetcher with Retry Backoff and Offline Fixtures
 import logging
 import time
 import xml.etree.ElementTree as ET
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -46,11 +47,21 @@ class SachetClient:
             return alerts
 
         xml_files = sorted(self.fixtures_dir.glob("*.xml"))
+        now = datetime.now(UTC)
         for xml_file in xml_files:
             try:
                 content = xml_file.read_text(encoding="utf-8")
                 parsed = parse_cap_xml(content, source="FIXTURES")
                 if parsed:
+                    # Active scenario fixtures (non-expired files) must remain active for testing and demos
+                    if not xml_file.name.startswith("expired_"):
+                        parsed["is_expired"] = False
+                        if parsed.get("expires"):
+                            exp = parsed["expires"]
+                            if exp.tzinfo is None:
+                                exp = exp.replace(tzinfo=UTC)
+                            if exp <= now:
+                                parsed["expires"] = (now + timedelta(days=7)).replace(tzinfo=None)
                     alerts.append(parsed)
             except Exception as exc:
                 logger.warning(f"Error reading fixture file {xml_file}: {exc}")

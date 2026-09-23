@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { ArrowLeft, CheckCircle2, XCircle, ShieldAlert, Navigation, Megaphone } from 'lucide-react';
+import { getApiUrl, getEventSourceUrl } from '@/lib/api';
 
 const CommandMap = dynamic(() => import('./CommandMap'), { ssr: false });
 
@@ -18,13 +19,13 @@ export default function CommandPage() {
   const [template, setTemplate] = useState("EVAC");
 
   const loadState = async () => {
-    const res = await fetch('http://localhost:8000/api/decision/state');
+    const res = await fetch(getApiUrl('/api/decision/state'));
     const data = await res.json();
     setState(data);
   };
 
   const loadHealth = async () => {
-    const res = await fetch('http://localhost:8000/api/decision/health');
+    const res = await fetch(getApiUrl('/api/decision/health'));
     const data = await res.json();
     setHealth(data);
   };
@@ -33,7 +34,7 @@ export default function CommandPage() {
     loadState();
     loadHealth();
 
-    const es = new EventSource('http://localhost:8000/api/reports/ward_state_stream');
+    const es = new EventSource(getEventSourceUrl('/api/reports/ward_state_stream'));
     es.onmessage = () => {
       loadState();
     };
@@ -43,7 +44,7 @@ export default function CommandPage() {
   const handleAction = async (allocation: any, action: string) => {
     if (role !== "Officer") return alert("Viewer mode cannot execute actions.");
     
-    await fetch('http://localhost:8000/api/decision/action', {
+    await fetch(getApiUrl('/api/decision/action'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -63,7 +64,7 @@ export default function CommandPage() {
     if (role !== "Officer") return alert("Viewer mode cannot execute actions.");
     if (!targetWard) return alert("Select a ward");
     
-    await fetch('http://localhost:8000/api/decision/broadcast', {
+    await fetch(getApiUrl('/api/decision/broadcast'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

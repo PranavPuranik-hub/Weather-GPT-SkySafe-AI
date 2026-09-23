@@ -27,6 +27,8 @@ class Settings(BaseSettings):
     LLM_PROVIDER: Literal["ollama", "gemini", "groq", "null"] = "null"
     OLLAMA_URL: str = "http://localhost:11434"
     GEMINI_API_KEY: str | None = None
+    GEMINI_MODEL: str = "gemini-3.6-flash"
+    GEMINI_TIMEOUT: float = 8.0
     GROQ_API_KEY: str | None = None
 
     # Demo Setup Defaults

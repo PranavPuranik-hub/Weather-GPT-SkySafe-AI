@@ -6,6 +6,7 @@ import {
   Play, Pause, SkipForward, AlertTriangle, Activity,
   Zap, WifiOff, FileText, ArrowLeft
 } from "lucide-react";
+import { getApiUrl, getEventSourceUrl } from "@/lib/api";
 
 const SCENARIOS = [
   "kerala_flood", "odisha_cyclone", "rajasthan_heatwave",
@@ -27,7 +28,7 @@ export default function LabPage() {
 
   // Connect to clock SSE stream
   useEffect(() => {
-    const es = new EventSource("http://localhost:8000/api/eval/clock/stream");
+    const es = new EventSource(getEventSourceUrl("/api/eval/clock/stream"));
     esRef.current = es;
     es.onmessage = (e) => {
       try {
@@ -42,12 +43,12 @@ export default function LabPage() {
   }, []);
 
   const fetchClockState = async () => {
-    const res = await fetch("http://localhost:8000/api/eval/clock/state");
+    const res = await fetch(getApiUrl("/api/eval/clock/state"));
     setClockState(await res.json());
   };
 
   const clockAction = async (action: string, body?: any) => {
-    await fetch(`http://localhost:8000/api/eval/clock/${action}`, {
+    await fetch(getApiUrl(`/api/eval/clock/${action}`), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: body ? JSON.stringify(body) : undefined,
@@ -58,7 +59,7 @@ export default function LabPage() {
 
   const toggleOutage = async () => {
     setOutageLoading(true);
-    const res = await fetch("http://localhost:8000/api/eval/outage", {
+    const res = await fetch(getApiUrl("/api/eval/outage"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ enabled: !outageActive }),
@@ -87,7 +88,7 @@ export default function LabPage() {
             <Link href="/lab/breakit" className="px-3 py-1.5 rounded-lg bg-red-600/20 hover:bg-red-600/40 text-red-300 text-sm font-semibold flex items-center gap-1">
               <Zap className="w-4 h-4" /> Break-it Panel
             </Link>
-            <a href="http://localhost:8000/api/eval/report" target="_blank" rel="noreferrer"
+            <a href={getApiUrl("/api/eval/report")} target="_blank" rel="noreferrer"
               className="px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-300 text-sm font-semibold flex items-center gap-1">
               <FileText className="w-4 h-4" /> Evidence Report
             </a>

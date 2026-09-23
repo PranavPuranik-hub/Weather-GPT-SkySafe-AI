@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Zap, Clock, ShieldAlert, ChevronDown, ChevronUp, Radio, CheckCircle, AlertTriangle } from "lucide-react";
+import { getApiBaseUrl } from "@/lib/api";
 
 interface DevPanelProps {
   onSimulatedAlert: (alertData: any) => void;
@@ -46,10 +47,11 @@ export default function DevPanel({
         console.warn("Relative fetch failed, trying direct backend...", networkErr);
       }
 
-      // If relative failed or returned 404/500, attempt direct call to backend port 8000
+      // If relative failed or returned 404/500, attempt direct call to backend
       if (!res || !res.ok) {
         try {
-          const directUrl = `http://127.0.0.1:8000${path}`;
+          const apiBase = getApiBaseUrl();
+          const directUrl = apiBase ? `${apiBase}${path}` : (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") ? `http://127.0.0.1:8000${path}` : path);
           res = await fetch(directUrl, { method: "POST" });
         } catch (directErr) {
           console.error("Direct backend fetch failed:", directErr);

@@ -58,16 +58,30 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS Middleware — restrict origins in production via ALLOWED_ORIGINS env var
+# CORS Middleware — configure allowed origins
 import os
 
-_allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:3001").split(",")
+_raw_origins = os.getenv("ALLOWED_ORIGINS", "")
+_frontend_url = os.getenv("FRONTEND_URL", "")
+_default_origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:3001",
+    "http://127.0.0.1:3001",
+]
+_allowed_origins = list(dict.fromkeys(
+    _default_origins +
+    [orig.strip() for orig in _raw_origins.split(",") if orig.strip()] +
+    ([_frontend_url.strip()] if _frontend_url.strip() else [])
+))
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_allowed_origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
-    allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["Content-Type", "Authorization", "X-Request-ID"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Register API Routers

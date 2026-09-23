@@ -3,12 +3,13 @@
 import Link from 'next/link';
 import { ArrowLeft, Activity, Users, Truck, AlertTriangle } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { getApiUrl, getEventSourceUrl } from '@/lib/api';
 
 export default function DashboardPage() {
   const [wardState, setWardState] = useState("Predicted");
 
   useEffect(() => {
-    const eventSource = new EventSource('http://localhost:8000/api/reports/ward_state_stream');
+    const eventSource = new EventSource(getEventSourceUrl('/api/reports/ward_state_stream'));
 
     eventSource.onmessage = (event) => {
       try {
@@ -93,7 +94,7 @@ export default function DashboardPage() {
           <button 
             onClick={() => {
               setWardState("Predicted");
-              fetch('http://localhost:8000/api/reports/simulate', {
+              fetch(getApiUrl('/api/reports/simulate'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ward_id: "Ward 7", count: 5, text: "Water entered my home" })

@@ -16,6 +16,9 @@ class Base(DeclarativeBase):
 
 if settings.DATABASE_URL:
     db_url = settings.DATABASE_URL
+    # Normalize postgres:// to postgresql:// for SQLAlchemy 2.0 compatibility
+    if db_url.startswith("postgres://"):
+        db_url = db_url.replace("postgres://", "postgresql://", 1)
 else:
     # Anchor to project root so tests, CLI, and uvicorn share the exact same DB file
     root_db = Path(__file__).resolve().parents[3] / "app_test.db"

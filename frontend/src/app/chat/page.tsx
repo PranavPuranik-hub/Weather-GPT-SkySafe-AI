@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import ClaimLedgerDrawer from "@/components/ClaimLedgerDrawer";
 import DevPanel from "@/components/DevPanel";
+import { getApiBaseUrl } from "@/lib/api";
 
 interface Message {
   id: string;
@@ -63,9 +64,10 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isGpsLoading, setIsGpsLoading] = useState(false);
   const [language, setLanguage] = useState("en");
   const [persona, setPersona] = useState("General");
-  const [location, setLocation] = useState("Wayanad");
+  const [location, setLocation] = useState("Detecting location...");
   const [locationCoords, setLocationCoords] = useState<{ lat?: number; lon?: number }>({});
   const [phone, setPhone] = useState("");
   const [alertConsent, setAlertConsent] = useState(true);
@@ -111,6 +113,48 @@ export default function ChatPage() {
       const handleOffline = () => setIsOffline(true);
       window.addEventListener('online', handleOnline);
       window.addEventListener('offline', handleOffline);
+
+      // Auto-detect GPS device location on load
+      if ("geolocation" in navigator) {
+        setIsGpsLoading(true);
+        navigator.geolocation.getCurrentPosition(
+          async (pos) => {
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
+            setLocationCoords({ lat, lon });
+            try {
+              const res = await apiFetch("/api/chat/message", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  message: "forecast",
+                  lat,
+                  lon,
+                  lang: language,
+                }),
+              });
+              const data = await res.json();
+              if (data?.location) {
+                const locName = data.location.name || data.location.district;
+                if (locName) setLocation(locName);
+              }
+            } catch (e) {
+              console.warn("Initial GPS fetch failed", e);
+            } finally {
+              setIsGpsLoading(false);
+            }
+          },
+          (err) => {
+            console.warn("GPS auto-detect skipped or denied", err);
+            setIsGpsLoading(false);
+            setLocation("New Delhi");
+          },
+          { timeout: 7000 }
+        );
+      } else {
+        setLocation("New Delhi");
+      }
+
       return () => {
         window.removeEventListener('online', handleOnline);
         window.removeEventListener('offline', handleOffline);
@@ -121,6 +165,7 @@ export default function ChatPage() {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isLoading]);
+
 
   // Initialize initial welcome message
   useEffect(() => {
@@ -268,7 +313,7 @@ export default function ChatPage() {
     }
   };
 
-// Robust API fetcher: tries Next.js rewrite first, then falls back directly to backend on 8000
+// Robust API fetcher: tries Next.js rewrite first, then falls back to configured API base or local dev
 async function apiFetch(path: string, init?: RequestInit): Promise<Response> {
   try {
     const res = await fetch(path, init);
@@ -276,7 +321,10 @@ async function apiFetch(path: string, init?: RequestInit): Promise<Response> {
   } catch (e) {
     // relative failed
   }
-  if (path.startsWith("/api")) {
+  const apiBase = getApiBaseUrl();
+  if (apiBase && path.startsWith("/api")) {
+    return await fetch(`${apiBase}${path}`, init);
+  } else if (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") && path.startsWith("/api")) {
     return await fetch(`http://127.0.0.1:8000${path}`, init);
   }
   throw new Error(`Failed to fetch ${path}`);
@@ -316,18 +364,85 @@ async function apiFetch(path: string, init?: RequestInit): Promise<Response> {
     }
   };
 
-  // Get live location via GPS
-  const handleGetLocation = () => {
-    if ("geolocation" in navigator) {
+  // Get live location via GPS and auto-fetch real-time weather
+  const handleGetLocation = (autoFetch: boolean = true) => {
+    if (typeof window !== "undefined" && "geolocation" in navigator) {
+      setIsGpsLoading(true);
       navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          setLocationCoords({ lat: pos.coords.latitude, lon: pos.coords.longitude });
-          setLocation(`${pos.coords.latitude.toFixed(3)}, ${pos.coords.longitude.toFixed(3)}`);
+        async (pos) => {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+          setLocationCoords({ lat, lon });
+
+          if (autoFetch) {
+            setIsLoading(true);
+            const userMsgText =
+              language === "hi"
+                ? "📍 मेरे वर्तमान स्थान का मौसम बताएं"
+                : language === "or"
+                ? "📍 ମୋ ବର୍ତ୍ତମାନ ସ୍ଥାନର ପାଣିପାଗ କୁହନ୍ତୁ"
+                : "📍 Weather at my current GPS location";
+
+            const userMsg: Message = {
+              id: `user-${Date.now()}`,
+              sender: "user",
+              text: userMsgText,
+              timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+            };
+            setMessages((prev) => [...prev, userMsg]);
+
+            try {
+              const res = await apiFetch("/api/chat/message", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  message: userMsgText,
+                  lat,
+                  lon,
+                  lang: language,
+                  persona: persona,
+                }),
+              });
+              const data = await res.json();
+              if (data && data.location) {
+                const locName = data.location.name || data.location.district;
+                if (locName) setLocation(locName);
+              }
+              if (data && data.message) {
+                const botMsg: Message = {
+                  id: `bot-${Date.now()}`,
+                  sender: "bot",
+                  text: data.message,
+                  voiceScript: data.voice_script,
+                  audioUrl: data.audio_url,
+                  timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+                  claimLedger: data.claim_ledger,
+                  intent: data.intent,
+                  toolsCalled: data.tools_called,
+                  isDrill: false,
+                };
+                setMessages((prev) => [...prev, botMsg]);
+                if (data.quick_replies && data.quick_replies?.length > 0) {
+                  setQuickReplies(data.quick_replies);
+                }
+              }
+            } catch (err) {
+              console.error(err);
+            } finally {
+              setIsLoading(false);
+            }
+          }
+          setIsGpsLoading(false);
         },
         (err) => {
-          console.warn("Geolocation denied, using district default", err);
-        }
+          console.warn("Geolocation denied or error", err);
+          setIsGpsLoading(false);
+          alert("Could not access device GPS. Please check location permissions in your browser settings.");
+        },
+        { timeout: 10000, enableHighAccuracy: true }
       );
+    } else {
+      alert("Geolocation is not supported by your browser.");
     }
   };
 
@@ -369,6 +484,11 @@ async function apiFetch(path: string, init?: RequestInit): Promise<Response> {
       const data = await res.json();
 
       if (res.ok && data) {
+        if (data.location) {
+          const locName = data.location.name || data.location.district;
+          if (locName) setLocation(locName);
+        }
+
         const botMsg: Message = {
           id: `bot-${Date.now()}`,
           sender: "bot",
@@ -387,6 +507,7 @@ async function apiFetch(path: string, init?: RequestInit): Promise<Response> {
           setQuickReplies(data.quick_replies);
         }
       } else {
+
         const errorMsg: Message = {
           id: `bot-err-${Date.now()}`,
           sender: "bot",
@@ -475,12 +596,17 @@ async function apiFetch(path: string, init?: RequestInit): Promise<Response> {
         {/* Quick Profile Indicators */}
         <div className="flex items-center gap-1.5">
           <button
-            onClick={() => setShowOnboarding(true)}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 border border-slate-700 transition-colors"
-            title="Edit Persona & Location"
+            onClick={() => handleGetLocation(true)}
+            disabled={isGpsLoading}
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition-all ${
+              isGpsLoading
+                ? "bg-amber-950/80 border-amber-500/50 text-amber-300 animate-pulse"
+                : "bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-100 border-slate-700"
+            }`}
+            title="Click to detect device GPS & real-time local weather"
           >
-            <MapPin className="w-3.5 h-3.5 text-blue-400" />
-            <span className="font-semibold">{location}</span>
+            <MapPin className={`w-3.5 h-3.5 ${isGpsLoading ? "text-amber-400 animate-spin" : "text-blue-400"}`} />
+            <span>{isGpsLoading ? "Detecting GPS..." : location}</span>
           </button>
 
           <button
@@ -491,6 +617,7 @@ async function apiFetch(path: string, init?: RequestInit): Promise<Response> {
             <Settings className="w-4 h-4" />
           </button>
         </div>
+
       </div>
 
       {/* WhatsApp Chat Thread */}
@@ -622,12 +749,18 @@ async function apiFetch(path: string, init?: RequestInit): Promise<Response> {
       <div className="bg-slate-950 p-2.5 border-t border-slate-800 flex items-center gap-2 shrink-0">
         {/* GPS Pin Button */}
         <button
-          onClick={handleGetLocation}
-          className="p-2.5 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
-          title="Share Current GPS Pin"
+          onClick={() => handleGetLocation(true)}
+          disabled={isGpsLoading}
+          className={`p-2.5 rounded-full transition-all ${
+            isGpsLoading
+              ? "bg-amber-500/20 text-amber-400 animate-pulse"
+              : "bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white"
+          }`}
+          title="Detect My Location & Fetch Real-Time Weather"
         >
-          <MapPin className="w-5 h-5 text-blue-400" />
+          <MapPin className={`w-5 h-5 ${isGpsLoading ? "animate-spin text-amber-400" : "text-blue-400"}`} />
         </button>
+
 
         {/* Text Input */}
         <input
@@ -758,7 +891,7 @@ async function apiFetch(path: string, init?: RequestInit): Promise<Response> {
                 </select>
                 <button
                   type="button"
-                  onClick={handleGetLocation}
+                  onClick={() => handleGetLocation()}
                   className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-blue-400 border border-slate-700 flex items-center gap-1"
                 >
                   <MapPin className="w-3.5 h-3.5" /> GPS

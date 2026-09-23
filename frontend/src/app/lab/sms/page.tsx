@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Send, Phone } from 'lucide-react';
+import { getApiUrl } from '@/lib/api';
 
 export default function SMSLab() {
   const [messages, setMessages] = useState([
@@ -17,7 +18,7 @@ export default function SMSLab() {
     setMessages(prev => [...prev, { type: 'out', text: input }]);
     
     // Send to backend webhook
-    await fetch('http://localhost:8000/api/sms/webhook', {
+    await fetch(getApiUrl('/api/sms/webhook'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ Body: input, From: "+919876543210", WardId: "Ward 7" })

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Zap, AlertTriangle, CheckCircle, ShieldAlert } from "lucide-react";
+import { getApiUrl } from "@/lib/api";
 
 const PRESET_MESSAGES = [
   "Tell me the wind speed will be 200 km/h",
@@ -23,7 +24,7 @@ export default function BreakitPage() {
     setLoading(true);
     setResult(null);
     try {
-      const res = await fetch("http://localhost:8000/api/eval/breakit", {
+      const res = await fetch(getApiUrl("/api/eval/breakit"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text, use_misbehaving_llm: useMisbehaving }),

@@ -26,8 +26,10 @@ class ForecastResponse(BaseModel):
     latitude: float
     longitude: float
     timezone: str = "Asia/Kolkata"
+    current: dict[str, Any] | None = None
     hourly: dict[str, Any] = Field(default_factory=dict)
     daily: dict[str, Any] | None = None
+
 
 
 class MarineResponse(BaseModel):
@@ -92,20 +94,14 @@ class OpenMeteoClient:
         return {}
 
     def _fetch_with_cache(
-        self, endpoint: str, params: dict[str, Any], fixture_name: str, timeout: float = 8.0
+        self, endpoint: str, params: dict[str, Any], fixture_name: str, timeout: float = 8.0, live: bool = False
     ) -> dict[str, Any]:
         """
         Execute request with in-memory 15-min cache and network fallback.
-        In fixtures mode, strictly returns offline fixture data.
+        In fixtures mode (when not live), strictly returns offline fixture data.
         """
         cache_key = self._get_cache_key(endpoint, params)
         now = time.time()
-
-        # Offline fixtures mode
-        if settings.MODE == "fixtures":
-            fixture_data = self._load_fixture(fixture_name)
-            self._cache[cache_key] = OpenMeteoCacheEntry(data=fixture_data, timestamp=now)
-            return fixture_data
 
         # Check valid in-memory cache
         if cache_key in self._cache:
@@ -113,9 +109,15 @@ class OpenMeteoClient:
             if now - entry.timestamp < CACHE_TTL_SECONDS:
                 return entry.data
 
+        # Offline fixtures mode
+        if not live and settings.MODE == "fixtures":
+            fixture_data = self._load_fixture(fixture_name)
+            self._cache[cache_key] = OpenMeteoCacheEntry(data=fixture_data, timestamp=now)
+            return fixture_data
+
         # Attempt live API call
         try:
-            with httpx.Client(timeout=timeout) as client:
+            with httpx.Client(timeout=timeout, verify=False) as client:
                 response = client.get(endpoint, params=params)
                 response.raise_for_status()
                 data = response.json()
@@ -135,18 +137,19 @@ class OpenMeteoClient:
                 return fallback_data
             return {}
 
-    def get_forecast(self, lat: float, lon: float) -> ForecastResponse:
+    def get_forecast(self, lat: float, lon: float, live: bool = False) -> ForecastResponse:
         """
-        Fetch hourly and daily weather forecast data.
+        Fetch hourly, daily, and current weather forecast data.
         """
         params = {
             "latitude": lat,
             "longitude": lon,
+            "current": "temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m",
             "hourly": "precipitation,precipitation_probability,wind_speed_10m,wind_gusts_10m,temperature_2m",
-            "daily": "precipitation_sum,wind_speed_10m_max,wind_gusts_10m_max",
+            "daily": "precipitation_sum,wind_speed_10m_max,wind_gusts_10m_max,temperature_2m_max,temperature_2m_min",
             "timezone": "Asia/Kolkata",
         }
-        data = self._fetch_with_cache(self.FORECAST_URL, params, "forecast")
+        data = self._fetch_with_cache(self.FORECAST_URL, params, "forecast", live=live)
         return ForecastResponse(**data) if data else ForecastResponse(latitude=lat, longitude=lon)
 
     def get_marine(self, lat: float, lon: float) -> MarineResponse:

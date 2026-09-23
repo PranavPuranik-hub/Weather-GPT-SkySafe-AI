@@ -9,7 +9,13 @@ import urllib.parse
 import urllib.request
 from typing import Any, Dict, Optional, Tuple
 
+import httpx
+
 logger = logging.getLogger("app")
+
+# Coordinate reverse geocode memory cache
+COORD_CACHE: Dict[Tuple[float, float], Dict[str, Any]] = {}
+
 
 # Pre-seeded Indian districts, coastal hubs, and villages from official CAP drill areas
 SEEDED_LOCATIONS: Dict[str, Dict[str, Any]] = {
@@ -44,6 +50,27 @@ SEEDED_LOCATIONS: Dict[str, Dict[str, Any]] = {
     "patna": {"name": "Patna", "district": "Patna", "state": "Bihar", "lat": 25.5941, "lon": 85.1376, "is_coastal": False},
     "bikaner": {"name": "Bikaner", "district": "Bikaner", "state": "Rajasthan", "lat": 28.0229, "lon": 73.3119, "is_coastal": False},
     "uttarkashi": {"name": "Uttarkashi", "district": "Uttarkashi", "state": "Uttarakhand", "lat": 30.7268, "lon": 78.4354, "is_coastal": False},
+
+    # Major Indian Metros and Capitals
+    "delhi": {"name": "New Delhi", "district": "New Delhi", "state": "Delhi", "lat": 28.6139, "lon": 77.2090, "is_coastal": False},
+    "new delhi": {"name": "New Delhi", "district": "New Delhi", "state": "Delhi", "lat": 28.6139, "lon": 77.2090, "is_coastal": False},
+    "bengaluru": {"name": "Bengaluru", "district": "Bengaluru", "state": "Karnataka", "lat": 12.9716, "lon": 77.5946, "is_coastal": False},
+    "bangalore": {"name": "Bengaluru", "district": "Bengaluru", "state": "Karnataka", "lat": 12.9716, "lon": 77.5946, "is_coastal": False},
+    "hyderabad": {"name": "Hyderabad", "district": "Hyderabad", "state": "Telangana", "lat": 17.3850, "lon": 78.4867, "is_coastal": False},
+    "kolkata": {"name": "Kolkata", "district": "Kolkata", "state": "West Bengal", "lat": 22.5726, "lon": 88.3639, "is_coastal": True},
+    "pune": {"name": "Pune", "district": "Pune", "state": "Maharashtra", "lat": 18.5204, "lon": 73.8567, "is_coastal": False},
+    "ahmedabad": {"name": "Ahmedabad", "district": "Ahmedabad", "state": "Gujarat", "lat": 23.0225, "lon": 72.5714, "is_coastal": False},
+    "jaipur": {"name": "Jaipur", "district": "Jaipur", "state": "Rajasthan", "lat": 26.9124, "lon": 75.7873, "is_coastal": False},
+    "lucknow": {"name": "Lucknow", "district": "Lucknow", "state": "Uttar Pradesh", "lat": 26.8467, "lon": 80.9462, "is_coastal": False},
+    "chandigarh": {"name": "Chandigarh", "district": "Chandigarh", "state": "Chandigarh", "lat": 30.7333, "lon": 76.7794, "is_coastal": False},
+
+    # Indic Language Aliases
+    "कटक": {"name": "Cuttack", "district": "Cuttack", "state": "Odisha", "lat": 20.4625, "lon": 85.8830, "is_coastal": False},
+    "पुरी": {"name": "Puri", "district": "Puri", "state": "Odisha", "lat": 19.8135, "lon": 85.8312, "is_coastal": True},
+    "दिल्ली": {"name": "New Delhi", "district": "New Delhi", "state": "Delhi", "lat": 28.6139, "lon": 77.2090, "is_coastal": False},
+    "मुंबई": {"name": "Mumbai", "district": "Mumbai", "state": "Maharashtra", "lat": 19.0760, "lon": 72.8777, "is_coastal": True},
+    "କଟକ": {"name": "Cuttack", "district": "Cuttack", "state": "Odisha", "lat": 20.4625, "lon": 85.8830, "is_coastal": False},
+    "ପୁରୀ": {"name": "Puri", "district": "Puri", "state": "Odisha", "lat": 19.8135, "lon": 85.8312, "is_coastal": True},
 }
 
 # Runtime memory cache for geocoded queries
@@ -59,7 +86,15 @@ def resolve_location(
     Resolve location from query string or coordinates.
     Returns (location_dict, is_ambiguous).
     """
-    # 1. Coordinate Pin resolution
+    # 1. Check if user explicitly asked for a specific location in query
+    if query and query.strip():
+        clean_q = query.strip().lower()
+        # Look for explicit place mentions (e.g., "in Delhi", "for Mumbai", "Puri")
+        for key, loc in SEEDED_LOCATIONS.items():
+            if re.search(rf'\b{re.escape(key)}\b', clean_q):
+                return loc, False
+
+    # 2. Coordinate Pin resolution (device GPS)
     if lat is not None and lon is not None:
         return _resolve_coordinates(lat, lon), False
 
@@ -69,44 +104,43 @@ def resolve_location(
     clean_q = query.strip().lower()
 
     # Remove filler words
-    clean_q = re.sub(r'\b(in|near|at|around|for|weather|alert|forecast|here)\b', '', clean_q).strip()
+    clean_q = re.sub(r'\b(in|near|at|around|for|weather|alert|forecast|here|tell|me|about|what|is|the)\b', '', clean_q).strip()
 
-    # 2. Check Seeded Locations
+    # 3. Check Seeded Locations
     for key, loc in SEEDED_LOCATIONS.items():
         if key in clean_q or clean_q in key:
             return loc, False
 
-    # 3. Check Geocode Cache
+    # 4. Check Geocode Cache
     if clean_q in GEOCODE_CACHE:
         return GEOCODE_CACHE[clean_q], False
 
-    # 4. Try Nominatim Geocoding (restricted to India)
+    # 5. Try Nominatim Geocoding (restricted to India)
     try:
         encoded = urllib.parse.quote(f"{clean_q}, India")
         url = f"https://nominatim.openstreetmap.org/search?q={encoded}&countrycodes=in&format=json&limit=1"
-        req = urllib.request.Request(
-            url,
-            headers={"User-Agent": "SkySafeAI-DisasterApp/1.0 (contact: support@skysafe.gov.in)"}
-        )
-        with urllib.request.urlopen(req, timeout=3.0) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-            if data:
-                res = data[0]
-                display_name = res.get("display_name", "")
-                parts = [p.strip() for p in display_name.split(",")]
-                district = parts[-3] if len(parts) >= 3 else parts[0]
-                state = parts[-2] if len(parts) >= 2 else "India"
+        headers = {"User-Agent": "SkySafeAI-DisasterApp/1.0 (contact: support@skysafe.gov.in)"}
+        with httpx.Client(timeout=3.0, verify=False) as client:
+            resp = client.get(url, headers=headers)
+            if resp.status_code == 200:
+                data = resp.json()
+                if data:
+                    res = data[0]
+                    display_name = res.get("display_name", "")
+                    parts = [p.strip() for p in display_name.split(",")]
+                    district = parts[-3] if len(parts) >= 3 else parts[0]
+                    state = parts[-2] if len(parts) >= 2 else "India"
 
-                loc = {
-                    "name": parts[0],
-                    "district": district,
-                    "state": state,
-                    "lat": float(res["lat"]),
-                    "lon": float(res["lon"]),
-                    "is_coastal": False
-                }
-                GEOCODE_CACHE[clean_q] = loc
-                return loc, False
+                    loc = {
+                        "name": parts[0],
+                        "district": district,
+                        "state": state,
+                        "lat": float(res["lat"]),
+                        "lon": float(res["lon"]),
+                        "is_coastal": False
+                    }
+                    GEOCODE_CACHE[clean_q] = loc
+                    return loc, False
     except Exception as e:
         logger.warning(f"Nominatim geocoding failed for '{clean_q}': {e}")
 
@@ -120,7 +154,66 @@ def resolve_location(
 
 
 def _resolve_coordinates(lat: float, lon: float) -> Dict[str, Any]:
-    """Find the nearest seeded Indian location to the given lat/lon coordinates."""
+    """
+    Resolve coordinates to real locality, district, and state using Nominatim reverse geocoding.
+    Includes in-memory caching and nearest seeded location fallback.
+    """
+    cache_key = (round(lat, 3), round(lon, 3))
+    if cache_key in COORD_CACHE:
+        return COORD_CACHE[cache_key]
+
+    # Try live reverse geocode via OpenStreetMap Nominatim
+    try:
+        url = f"https://nominatim.openstreetmap.org/reverse?lat={lat}&lon={lon}&format=json"
+        headers = {"User-Agent": "SkySafeAI-DisasterApp/1.0 (contact: support@skysafe.gov.in)"}
+        with httpx.Client(timeout=3.0, verify=False) as client:
+            resp = client.get(url, headers=headers)
+            if resp.status_code == 200:
+                data = resp.json()
+                addr = data.get("address", {})
+                district = (
+                    addr.get("state_district")
+                    or addr.get("district")
+                    or addr.get("city_district")
+                    or addr.get("county")
+                    or addr.get("city")
+                    or addr.get("town")
+                    or addr.get("suburb")
+                )
+                name = (
+                    addr.get("city")
+                    or addr.get("town")
+                    or addr.get("village")
+                    or addr.get("suburb")
+                    or addr.get("municipality")
+                    or district
+                    or "My Location"
+                )
+                district = district or name
+                state = addr.get("state") or addr.get("province") or "India"
+                country = addr.get("country") or "India"
+
+                is_coastal = any(
+                    k in district.lower() or k in name.lower()
+                    for k, v in SEEDED_LOCATIONS.items()
+                    if v.get("is_coastal")
+                )
+
+                loc = {
+                    "name": name,
+                    "district": district,
+                    "state": state,
+                    "country": country,
+                    "lat": lat,
+                    "lon": lon,
+                    "is_coastal": is_coastal
+                }
+                COORD_CACHE[cache_key] = loc
+                return loc
+    except Exception as exc:
+        logger.warning(f"Reverse geocode failed for ({lat}, {lon}): {exc}")
+
+    # Fallback to nearest seeded Indian location
     import math
 
     def dist(loc):
@@ -129,11 +222,14 @@ def _resolve_coordinates(lat: float, lon: float) -> Dict[str, Any]:
     nearest_key = min(SEEDED_LOCATIONS.keys(), key=lambda k: dist(SEEDED_LOCATIONS[k]))
     nearest = SEEDED_LOCATIONS[nearest_key]
 
-    return {
-        "name": f"Pin near {nearest['name']}",
+    fallback_loc = {
+        "name": f"{nearest['name']} (GPS)",
         "district": nearest["district"],
         "state": nearest["state"],
         "lat": lat,
         "lon": lon,
         "is_coastal": nearest.get("is_coastal", False)
     }
+    COORD_CACHE[cache_key] = fallback_loc
+    return fallback_loc
+

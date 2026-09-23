@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowLeft, RefreshCw } from "lucide-react";
+import { getApiUrl } from "@/lib/api";
 
 function MetricCard({ title, value, sub }: { title: string; value: any; sub?: string }) {
   return (
@@ -20,7 +21,7 @@ export default function MetricsPage() {
 
   const fetchMetrics = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/eval/metrics");
+      const res = await fetch(getApiUrl("/api/eval/metrics"));
       const json = await res.json();
       setData(json);
       setLastRefresh(new Date().toLocaleTimeString());

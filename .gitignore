@@ -14,8 +14,8 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
+/lib/
+/lib64/
 parts/
 sdist/
 var/
@@ -40,22 +40,28 @@ backend/skysafe_test.db
 backend/data/audio_cache/
 data/audio_cache/
 
-# Environments
+# Environments & Secrets
 .env
+.env.*
+!.env.example
 .venv
 env/
 venv/
 ENV/
 
-# Frontend
+# Frontend & Caches
 node_modules/
 frontend/node_modules/
 frontend/.next/
 .next/
 out/
+.vercel
+*.tsbuildinfo
+frontend/tsconfig.tsbuildinfo
 
 # IDE / Editor
 .vscode/
 .idea/
 *.swp
 *.swo
+.DS_Store

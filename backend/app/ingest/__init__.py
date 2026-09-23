@@ -14,10 +14,11 @@ def fetch_sachet_alerts():
     return sachet_client.fetch_feed_alerts()
 
 
-def fetch_open_meteo_forecast(lat: float, lon: float):
+def fetch_open_meteo_forecast(lat: float, lon: float, live: bool = False):
     """Fetch Open-Meteo forecast via open_meteo_client."""
-    resp = open_meteo_client.get_forecast(lat, lon)
+    resp = open_meteo_client.get_forecast(lat, lon, live=live)
     return resp.model_dump()
+
 
 
 __all__ = [

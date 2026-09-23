@@ -52,7 +52,7 @@ class VoiceSynthesizer:
 
     def _call_sarvam_tts(self, text: str, lang: str) -> Optional[bytes]:
         """Attempt synthesis using Sarvam Bulbul TTS API."""
-        if not self.sarvam_api_key:
+        if not self.sarvam_api_key or getattr(self, "sarvam_disabled", False):
             return None
 
         url = "https://api.sarvam.ai/text-to-speech"
@@ -81,18 +81,33 @@ class VoiceSynthesizer:
             method="POST"
         )
 
+        ssl_ctx = None
         try:
-            with urllib.request.urlopen(req, timeout=self.timeout) as resp:
+            import ssl
+            ssl_ctx = ssl._create_unverified_context()
+        except Exception:
+            ssl_ctx = None
+
+        try:
+            with urllib.request.urlopen(req, context=ssl_ctx, timeout=2.5) as resp:
                 data = json.loads(resp.read().decode("utf-8"))
                 audios = data.get("audios", [])
                 if audios:
                     return base64.b64decode(audios[0])
+        except urllib.error.HTTPError as e:
+            if e.code in (401, 403):
+                logger.info(f"Sarvam subscription key invalid ({e.code}), disabling Sarvam TTS.")
+                self.sarvam_disabled = True
+            return None
         except Exception as e:
             logger.warning(f"Sarvam TTS failed for {lang}: {e}")
             return None
 
+
     def _call_edge_tts(self, text: str, voice: str) -> Optional[bytes]:
         """Attempt synthesis using Edge TTS with slightly slow rate (-10%)."""
+        if getattr(self, "edge_disabled", False):
+            return None
         try:
             async def _synthesize():
                 communicate = edge_tts.Communicate(text, voice, rate="-10%")
@@ -109,12 +124,14 @@ class VoiceSynthesizer:
                     # For when running inside active asyncio event loop
                     import concurrent.futures
                     with concurrent.futures.ThreadPoolExecutor() as pool:
-                        return pool.submit(lambda: asyncio.run(_synthesize())).result(timeout=10)
+                        return pool.submit(lambda: asyncio.run(_synthesize())).result(timeout=5)
                 else:
                     return loop.run_until_complete(_synthesize())
             except RuntimeError:
                 return asyncio.run(_synthesize())
         except Exception as e:
+            if "SSL" in str(e) or "certificate" in str(e).lower():
+                self.edge_disabled = True
             logger.warning(f"Edge-TTS failed for voice {voice}: {e}")
             return None
 

@@ -172,3 +172,30 @@ make demo
 | [`docs/QA_REPORT.md`](docs/QA_REPORT.md) | Full QA results |
 | [`docs/DECISIONS.md`](docs/DECISIONS.md) | Architecture decisions |
 | [`docs/PROGRESS.md`](docs/PROGRESS.md) | Build progress log |
+
+---
+
+## 🚀 Production Cloud Deployment (Vercel + Render)
+
+### 1. Backend on Render
+1. Connect this GitHub repository in [Render Dashboard](https://dashboard.render.com).
+2. Choose **Blueprint** and Render will automatically detect [`render.yaml`](render.yaml), OR create a **Web Service**:
+   - **Runtime**: Python 3.11
+   - **Build Command**: `pip install -r backend/requirements.txt`
+   - **Start Command**: `uvicorn app.main:app --app-dir backend --host 0.0.0.0 --port $PORT`
+   - **Health Check Path**: `/health`
+3. Set Environment Variables in Render:
+   - `MODE`: `live`
+   - `LLM_PROVIDER`: `gemini`
+   - `GEMINI_MODEL`: `gemini-3.6-flash`
+   - `GEMINI_API_KEY`: *(Your Google Gemini API Key)*
+   - `SARVAM_API_KEY`: *(Your Sarvam AI API Key)*
+   - `ALLOWED_ORIGINS`: `https://<your-app>.vercel.app`
+
+### 2. Frontend on Vercel
+1. Import this repository in [Vercel Dashboard](https://vercel.com/new).
+2. Set Root Directory to `frontend`.
+3. Add Environment Variables:
+   - `NEXT_PUBLIC_API_URL`: `https://<your-render-backend-url>`
+   - `BACKEND_URL`: `https://<your-render-backend-url>`
+4. Click **Deploy**. Vercel will build and serve your production application with global edge acceleration.
