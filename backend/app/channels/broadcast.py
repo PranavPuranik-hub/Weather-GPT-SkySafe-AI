@@ -120,6 +120,23 @@ def deliver_broadcast(
         f"Broadcast delivered for alert {alert.identifier} to {alert.district} ({lang}) in {elapsed_ms}ms"
     )
 
+    # Persist LLM path event for metrics (additive, non-blocking)
+    try:
+        from app.core.db import SessionLocal
+        from app.models.eval import ChatEvent
+        _db = SessionLocal()
+        _db.add(ChatEvent(
+            alert_id=alert_dict["identifier"],
+            path_used=path_used,
+            latency_ms=elapsed_ms,
+            lang=lang,
+            persona=persona,
+        ))
+        _db.commit()
+        _db.close()
+    except Exception as _e:
+        logger.debug(f"ChatEvent log skipped: {_e}")
+
     return {
         "broadcast_id": f"BC-{alert_dict['identifier']}",
         "alert_id": alert_dict["identifier"],

@@ -6,6 +6,8 @@ import pytest
 from app.validator.engine import validate_payload
 from app.core.factsheet import FactSheet, Fact
 from app.core.action_plan import ActionPlan
+# Single canonical definition of the adversarial LLM — do NOT redefine here
+from app.llm.misbehaving_client import MisbehavingLLMClient
 
 # Dummy data
 FACTSHEET_DATA = {

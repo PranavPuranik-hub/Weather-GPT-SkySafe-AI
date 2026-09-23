@@ -11,6 +11,7 @@ from app.core.db import Base
 
 from app.models.reports import Report, WardState, WardStateEnum
 from app.models.decision import WardInfo, Depot, Resource, Shelter, Decision
+from app.models.eval import ChatEvent
 
 class Alert(Base):
     """
