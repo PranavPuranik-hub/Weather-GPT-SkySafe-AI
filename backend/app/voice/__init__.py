@@ -2,8 +2,9 @@
 Voice module for audio synthesis, caching, and playback.
 """
 from app.voice.chime import generate_emergency_chime
-from app.voice.synthesizer import voice_synthesizer, VoiceSynthesizer, AUDIO_CACHE_DIR
 from app.voice.models import VoiceRequest, VoiceResponse
+from app.voice.synthesizer import AUDIO_CACHE_DIR, VoiceSynthesizer, voice_synthesizer
+
 
 def text_to_speech(text: str, lang: str = "hi") -> bytes:
     """Synthesize voice note (max 30 seconds), returning raw audio bytes."""

@@ -1,26 +1,23 @@
 """
 Chat API Router for Citizen Conversational Weather & Disaster Assistant.
 """
-from typing import Dict, Any, Optional
-from fastapi import APIRouter, HTTPException, Depends
-from sqlalchemy.orm import Session
-from pydantic import BaseModel, Field
+from datetime import datetime
+from typing import Optional
 
+from fastapi import APIRouter, Depends
+from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
+
+from app.channels.broadcast import deliver_broadcast
+from app.chat.engine import get_or_create_session, handle_chat_message, process_onboarding
 from app.chat.models import (
     ChatRequest,
     ChatResponse,
+    IncidentReportRequest,
     OnboardingRequest,
     OnboardingResponse,
-    IncidentReportRequest,
 )
-from app.chat.engine import handle_chat_message, process_onboarding, get_or_create_session
-from app.chat.geocoding import resolve_location, SEEDED_LOCATIONS
-from app.voice import voice_synthesizer
-from app.models import Alert
-from app.core.db import SessionLocal
 from app.ingest.service import ingest_service
-from app.channels.broadcast import deliver_broadcast
-from datetime import datetime, timedelta
 
 chat_router = APIRouter(prefix="/api/chat", tags=["chat"])
 
@@ -37,7 +34,8 @@ def onboard_citizen(req: OnboardingRequest):
     return process_onboarding(req)
 
 
-from app.core.db import SessionLocal, get_db
+from app.core.db import get_db
+
 
 @chat_router.post("/message", response_model=ChatResponse)
 def send_message(req: ChatRequest, db: Session = Depends(get_db)):

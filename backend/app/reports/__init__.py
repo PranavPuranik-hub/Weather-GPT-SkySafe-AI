@@ -3,12 +3,12 @@ Reports package: Automated bulletin & Situation Report (SitRep) generator, and C
 """
 
 from .service import (
-    generate_sitrep,
-    submit_report,
-    process_clustering,
-    classify_report_category,
+    SSE_CLIENTS,
     broadcast_ward_state,
-    SSE_CLIENTS
+    classify_report_category,
+    generate_sitrep,
+    process_clustering,
+    submit_report,
 )
 
 __all__ = [

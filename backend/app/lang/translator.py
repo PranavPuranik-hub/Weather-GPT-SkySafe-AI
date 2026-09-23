@@ -3,15 +3,15 @@ Translation Service for SkySafe AI.
 Provider chain: Sarvam API (if key) -> Deterministic Template Pack -> English fallback.
 All translations are strictly grounded and validated through the Grounding Validator.
 """
-import os
 import json
 import logging
-import urllib.request
+import os
 import urllib.error
-from typing import Dict, Any, Tuple, Optional, List
+import urllib.request
+from typing import Any, Dict, Optional, Tuple
 
-from app.lang.templates.pack import get_localized_action, ACTION_TEMPLATES
-from app.lang.digits import render_fact_slot, to_target_digits
+from app.lang.digits import to_target_digits
+from app.lang.templates.pack import get_localized_action
 from app.validator.engine import validate_payload
 from app.validator.models import ClaimLedger
 
@@ -27,7 +27,7 @@ class TranslationService:
         """Call Sarvam AI translation API."""
         if not self.sarvam_api_key:
             return None
-            
+
         url = "https://api.sarvam.ai/translate"
         # Sarvam language code mapping (e.g. hi-IN, bn-IN, te-IN, mr-IN, ta-IN, od-IN, gu-IN)
         sarvam_code = f"{target_lang}-IN" if "-" not in target_lang else target_lang

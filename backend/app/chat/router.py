@@ -3,7 +3,6 @@ Rule-first Intent Router for Citizen Chat.
 Provides deterministic keyword/regex matching for the 9 core intents across English, Hindi, and Odia.
 """
 import re
-from typing import Dict, Any, Tuple, Optional
 
 # Intent rule definitions: regex patterns mapped to intent codes
 INTENT_PATTERNS = {

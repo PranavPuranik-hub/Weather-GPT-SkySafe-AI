@@ -1,8 +1,11 @@
 import math
-from typing import List, Dict, Any
+from typing import Any, Dict, List
+
 from sqlalchemy.orm import Session
-from app.models.decision import WardInfo, Depot, Resource, Shelter
+
 from app.decision.scoring import calculate_ward_risk_score
+from app.models.decision import Depot, Shelter, WardInfo
+
 
 def haversine(lat1, lon1, lat2, lon2):
     R = 6371.0 # Earth radius in kilometers
@@ -18,7 +21,7 @@ def optimize_resources(db: Session) -> List[Dict[str, Any]]:
     """
     wards = db.query(WardInfo).all()
     depots = db.query(Depot).all()
-    
+
     # Calculate risk scores for all wards
     ward_scores = []
     for w in wards:
@@ -28,10 +31,10 @@ def optimize_resources(db: Session) -> List[Dict[str, Any]]:
             "score": score,
             "factors": factors
         })
-    
+
     # Sort wards descending by score
     ward_scores.sort(key=lambda x: x["score"], reverse=True)
-    
+
     # Fetch available resources (in memory for greedy allocation simulation)
     # depot_resources[depot_id][type] = available_qty
     depot_resources = {}
@@ -45,16 +48,16 @@ def optimize_resources(db: Session) -> List[Dict[str, Any]]:
                     "qty": r.available_qty,
                     "db_id": r.id
                 }
-    
+
     allocations = []
     speed_kmh = 30.0 # assumed truck speed
-    
+
     # Simple rule matrix per hazard proxy (risk >= 60 triggers actions)
     for ws in ward_scores:
         w = ws["ward"]
         if ws["score"] < 40.0:
             continue # Skip low risk
-            
+
         # Determine needed resources based on factors
         needs = {}
         if ws["score"] >= 70:
@@ -62,11 +65,11 @@ def optimize_resources(db: Session) -> List[Dict[str, Any]]:
             needs["Relief Kits"] = 500
         elif ws["score"] >= 50:
             needs["Relief Kits"] = 200
-            
+
         if w.low_lying_score > 0.7:
             needs["Boats"] = 4
             needs["Pumps"] = 5
-            
+
         for r_type, qty_needed in needs.items():
             # Find closest depot with this resource
             closest_depot = None
@@ -77,19 +80,19 @@ def optimize_resources(db: Session) -> List[Dict[str, Any]]:
                     if dist < min_dist:
                         min_dist = dist
                         closest_depot = d_id
-            
+
             if closest_depot:
                 available = depot_resources[closest_depot][r_type]["qty"]
                 allocate_qty = min(qty_needed, available)
                 eta_min = int((min_dist / speed_kmh) * 60)
-                
+
                 # Decrement in-memory for this pass
                 depot_resources[closest_depot][r_type]["qty"] -= allocate_qty
-                
+
                 # Build ledger justification
                 top_factors = ws["factors"][:3]
                 rationale_text = f"risk {ws['score']}; " + "; ".join([f"{f['factor']} {f['value']}" for f in top_factors])
-                
+
                 allocations.append({
                     "ward_id": w.ward_id,
                     "ward_name": w.name,
@@ -101,13 +104,13 @@ def optimize_resources(db: Session) -> List[Dict[str, Any]]:
                     "ledger": top_factors, # specific data points for the drawer
                     "db_resource_id": depot_resources[closest_depot][r_type]["db_id"]
                 })
-                
+
     return allocations
 
 def suggest_evacuations(db: Session) -> List[Dict[str, Any]]:
     wards = db.query(WardInfo).all()
     shelters = db.query(Shelter).all()
-    
+
     # Risk calculation
     suggestions = []
     for w in wards:
@@ -125,6 +128,6 @@ def suggest_evacuations(db: Session) -> List[Dict[str, Any]]:
                     "spare_capacity": spare,
                     "risk_score": score
                 })
-    
+
     suggestions.sort(key=lambda x: x["risk_score"], reverse=True)
     return suggestions

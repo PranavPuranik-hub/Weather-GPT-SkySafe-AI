@@ -4,6 +4,7 @@ Extractor for numeric tokens, dates, and locations.
 import re
 from typing import List
 
+
 def extract_numeric_tokens(text: str) -> List[str]:
     """
     Extracts purely numeric tokens or numbers with units (e.g. 100, 100km, 45.5).

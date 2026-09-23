@@ -2,13 +2,13 @@
 Deterministic Tool implementations for the Citizen Chat Agent.
 Every factual response is grounded in tool outputs.
 """
-from datetime import datetime
-from typing import Dict, Any, List, Optional
 import math
+from datetime import datetime
+from typing import Any, Dict, Optional
 
 from app.core.db import SessionLocal
-from app.models import Alert
 from app.ingest.open_meteo import open_meteo_client
+from app.models import Alert
 
 # Seeded official disaster shelters registry
 OFFICIAL_SHELTERS = [
@@ -258,7 +258,7 @@ def get_marine(location: Dict[str, Any]) -> Dict[str, Any]:
             "safety_status": safety_status,
             "facts": facts
         }
-    except Exception as e:
+    except Exception:
         return {
             "district": district,
             "is_coastal": is_coastal,

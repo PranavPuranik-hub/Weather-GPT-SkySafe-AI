@@ -2,8 +2,7 @@
 SMS character budgeting and formatting service.
 Supports GSM-7 and Unicode (UCS-2) segment calculation per telecom standards.
 """
-import re
-from typing import Dict, Any
+from typing import Any, Dict
 
 # Standard GSM-7 Basic Character Set + Extension Table
 GSM7_BASIC = set(
@@ -72,7 +71,7 @@ def format_emergency_sms(
     - <= 201 characters for Indic scripts (<= 3 segments)
     """
     header = "[DRILL]"
-    
+
     # Format localized emergency header
     if lang == "hi":
         sms = f"{header} {event} ({area}) - ग्रेड {grade}: {action}"

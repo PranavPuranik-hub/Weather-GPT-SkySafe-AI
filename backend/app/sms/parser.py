@@ -1,6 +1,9 @@
 from typing import Optional
+
 from sqlalchemy.orm import Session
+
 from app.reports.service import submit_report
+
 
 def parse_sms_reply(reply_text: str, phone_hash: str, ward_id: str, db: Session) -> Optional[str]:
     """
@@ -8,7 +11,7 @@ def parse_sms_reply(reply_text: str, phone_hash: str, ward_id: str, db: Session)
     Returns the parsed intent/category or None if unparseable.
     """
     text = reply_text.strip()
-    
+
     category = None
     if text == "1":
         category = "Safe"
@@ -16,7 +19,7 @@ def parse_sms_reply(reply_text: str, phone_hash: str, ward_id: str, db: Session)
         category = "Need Help"
     elif text == "3":
         category = "Water Logging"
-        
+
     if category:
         submit_report(
             db=db,
@@ -27,5 +30,5 @@ def parse_sms_reply(reply_text: str, phone_hash: str, ward_id: str, db: Session)
             ward_id=ward_id
         )
         return category
-        
+
     return None

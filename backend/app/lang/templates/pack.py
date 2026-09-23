@@ -2,7 +2,8 @@
 Deterministic multilingual template packs for ActionPlan action IDs and fact slots.
 Supports the 7 verified languages (hi, bn, te, mr, ta, or, gu) plus en.
 """
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
+
 from app.lang.digits import render_fact_slot
 
 # Action templates dictionary: action_id -> {lang -> localized template string}

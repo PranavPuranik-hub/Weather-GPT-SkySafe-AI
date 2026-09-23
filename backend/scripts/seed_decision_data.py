@@ -1,14 +1,14 @@
-import os
+import json
 import sys
 from pathlib import Path
-import json
 
 # Add backend directory to path
 backend_dir = Path(__file__).resolve().parent.parent
 sys.path.append(str(backend_dir))
 
-from app.core.db import SessionLocal, Base, engine
-from app.models.decision import WardInfo, Depot, Resource, Shelter
+from app.core.db import Base, SessionLocal, engine
+from app.models.decision import Depot, Resource, Shelter, WardInfo
+
 
 def get_geojson_square(lat, lon, size=0.005):
     """Generate a simple square polygon GeoJSON string for mock wards."""

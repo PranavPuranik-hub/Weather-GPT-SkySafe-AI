@@ -27,7 +27,7 @@ ActionPlan:
 """
     if violations:
         base += f"\nPREVIOUS ATTEMPT FAILED VALIDATION WITH THESE VIOLATIONS:\n{violations}\nFix these violations immediately by strictly adhering to the facts and actions."
-    
+
     return base
 
 RESPONSE_JSON_SCHEMA = {

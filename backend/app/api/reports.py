@@ -1,16 +1,15 @@
 import asyncio
 import json
 import logging
-from typing import Optional
 
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.core.db import get_db
-from app.reports.service import SSE_CLIENTS, submit_report
 from app.models.reports import WardState, WardStateEnum
-from pydantic import BaseModel
+from app.reports.service import SSE_CLIENTS, submit_report
 
 logger = logging.getLogger("app")
 router = APIRouter(prefix="/api/reports", tags=["Reports"])
@@ -22,6 +21,7 @@ class SimulateReportRequest(BaseModel):
 
 import queue
 
+
 @router.get("/ward_state_stream")
 async def ward_state_stream(request: Request):
     """
@@ -29,14 +29,14 @@ async def ward_state_stream(request: Request):
     """
     q = queue.Queue()
     SSE_CLIENTS.append(q)
-    
+
     async def event_generator():
         try:
             while True:
                 # Disconnect if client leaves
                 if await request.is_disconnected():
                     break
-                    
+
                 # Non-blocking get with short sleep
                 try:
                     payload = q.get_nowait()
@@ -48,7 +48,7 @@ async def ward_state_stream(request: Request):
         finally:
             if q in SSE_CLIENTS:
                 SSE_CLIENTS.remove(q)
-                
+
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 
 
@@ -64,11 +64,11 @@ def simulate_ward_reports(req: SimulateReportRequest, db: Session = Depends(get_
         ws.state = WardStateEnum.PREDICTED.value
         ws.ground_truth_score = 1.0
         db.commit()
-        
+
     from app.models.reports import Report
     db.query(Report).filter(Report.ward_id == req.ward_id).delete()
     db.commit()
-    
+
     results = []
     import uuid
     run_id = str(uuid.uuid4())[:8]
@@ -83,5 +83,5 @@ def simulate_ward_reports(req: SimulateReportRequest, db: Session = Depends(get_
             ward_id=req.ward_id
         )
         results.append(report.id)
-        
+
     return {"status": "success", "ward_id": req.ward_id, "reports_created": len(results)}

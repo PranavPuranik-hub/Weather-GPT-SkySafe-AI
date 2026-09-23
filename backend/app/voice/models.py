@@ -1,7 +1,8 @@
 """
 Pydantic Models for Voice API requests and responses.
 """
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
+
 from pydantic import BaseModel, Field
 
 

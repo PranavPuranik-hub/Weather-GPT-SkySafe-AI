@@ -1,8 +1,9 @@
 """
 Output ActionPlan Model representing grounded, persona-specific emergency guidance.
 """
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
+
 from app.core.factsheet import FactSheet
 from app.core.grade import GradeEngine
 from app.core.rule_engine import rule_engine

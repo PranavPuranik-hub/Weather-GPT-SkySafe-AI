@@ -1,26 +1,27 @@
 """
 Report script for adversarial test suite.
 """
-import sys
-import subprocess
 import os
+import subprocess
+import sys
+
 
 def main():
     print("Running Adversarial Validator Test Suite...")
-    
+
     # Try different test paths depending on where we are running from
     test_path = "tests/validator/" if os.path.exists("tests/validator/") else "backend/tests/validator/"
-    
+
     result = subprocess.run(
         [sys.executable, "-m", "pytest", test_path, "-v"],
         capture_output=True,
         text=True
     )
-    
+
     print(result.stdout)
     if result.stderr:
         print("ERRORS:", result.stderr)
-        
+
     if result.returncode == 0:
         print("\nSUCCESS: 100% Catch rate achieved for adversarial hallucinations.")
     else:

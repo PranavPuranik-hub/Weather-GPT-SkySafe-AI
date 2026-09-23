@@ -98,7 +98,7 @@ class IngestService:
         stored_alerts: list[Alert] = []
         try:
             # 1. Primary Source — check if outage is simulated
-            from app.eval.outage import is_outage_enabled, SourceUnavailableError
+            from app.eval.outage import SourceUnavailableError, is_outage_enabled
             if is_outage_enabled():
                 raise SourceUnavailableError("Simulated source outage active (Lab/Eval mode)")
             fetched_alerts = sachet_client.fetch_feed_alerts()

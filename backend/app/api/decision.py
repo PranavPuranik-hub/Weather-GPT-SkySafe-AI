@@ -1,16 +1,16 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from typing import List, Dict, Any
-from datetime import datetime
 import json
+from typing import Dict
+
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
 from app.core.db import get_db
-from app.models.decision import WardInfo, Depot, Resource, Shelter, Decision
-from app.models.reports import WardState
-from app.models import Alert
 from app.decision.optimizer import optimize_resources, suggest_evacuations
 from app.decision.scoring import calculate_ward_risk_score
-from pydantic import BaseModel
+from app.models import Alert
+from app.models.decision import Decision, Depot, Resource, Shelter, WardInfo
+from app.models.reports import WardState
 
 router = APIRouter(prefix="/api/decision", tags=["Decision Command"])
 
@@ -34,7 +34,7 @@ def get_command_state(db: Session = Depends(get_db)):
     depots = db.query(Depot).all()
     shelters = db.query(Shelter).all()
     ward_states = db.query(WardState).all()
-    
+
     # Pack ward polygons and dynamic data
     ward_data = []
     for w in wards:
@@ -51,13 +51,13 @@ def get_command_state(db: Session = Depends(get_db)):
             "ground_truth_score": ws.ground_truth_score if ws else 1.0,
             "factors": factors
         })
-        
+
     depot_data = [{"id": d.id, "name": d.name, "lat": d.lat, "lon": d.lon, "resources": [{"type": r.type, "available": r.available_qty} for r in d.resources]} for d in depots]
     shelter_data = [{"id": s.id, "name": s.name, "lat": s.lat, "lon": s.lon, "capacity": s.capacity, "occupancy": s.current_occupancy} for s in shelters]
-    
+
     allocations = optimize_resources(db)
     evacuations = suggest_evacuations(db)
-    
+
     return {
         "wards": ward_data,
         "depots": depot_data,
@@ -70,14 +70,14 @@ def get_command_state(db: Session = Depends(get_db)):
 def log_action(req: ActionRequest, db: Session = Depends(get_db)):
     if req.user_role != "Officer":
         raise HTTPException(status_code=403, detail="Viewer mode cannot execute actions.")
-        
+
     if req.action == "Dispatch":
         res = db.query(Resource).filter(Resource.id == req.db_resource_id).first()
         if res and res.available_qty >= req.qty:
             res.available_qty -= req.qty
         else:
             raise HTTPException(status_code=400, detail="Not enough resources")
-            
+
     dec = Decision(
         ward_id=req.ward_id,
         action=req.action,
@@ -100,9 +100,9 @@ def execute_broadcast(req: BroadcastRequest, db: Session = Depends(get_db)):
     }
     if req.template_id not in ALLOWED_TEMPLATES:
         raise HTTPException(status_code=400, detail="Invalid template ID")
-        
+
     msg = ALLOWED_TEMPLATES[req.template_id].format(**req.slots)
-    
+
     dec = Decision(
         ward_id=req.ward_id,
         action="Broadcast",

@@ -1,10 +1,10 @@
 from datetime import datetime
-from typing import Any
 
-from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, Boolean
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from app.core.db import Base
+
 
 class WardInfo(Base):
     """Static demographic and geographic data for a ward."""

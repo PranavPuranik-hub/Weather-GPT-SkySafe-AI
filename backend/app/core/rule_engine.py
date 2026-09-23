@@ -4,7 +4,9 @@ Declarative YAML Rule Engine evaluating grounded actions per (hazard, grade, per
 import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
+
 import yaml
+
 from app.core.factsheet import FactSheet
 
 logger = logging.getLogger("app.core.rules")

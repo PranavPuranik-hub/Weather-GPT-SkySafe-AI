@@ -2,13 +2,12 @@
 Database connection and session factory with SQLite fallback.
 """
 import logging
+from pathlib import Path
 
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 from app.core.config import settings
-
-from pathlib import Path
 
 logger = logging.getLogger("app.db")
 

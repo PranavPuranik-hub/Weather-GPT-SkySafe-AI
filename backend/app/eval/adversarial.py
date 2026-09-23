@@ -5,14 +5,12 @@ Reuses validate_payload from the grounding validator.
 """
 import json
 import logging
-from typing import Any, Dict, Tuple
+from typing import Any, Dict
 
 from app.llm.misbehaving_client import MisbehavingLLMClient
+from app.llm.prompts import RESPONSE_JSON_SCHEMA, REWORDING_SYSTEM_PROMPT, build_user_prompt
 from app.llm.template_client import TemplateClient
-from app.llm.prompts import REWORDING_SYSTEM_PROMPT, RESPONSE_JSON_SCHEMA, build_user_prompt
 from app.validator.engine import validate_payload
-from app.core.factsheet import FactSheet, Fact, build_factsheet
-from app.core.action_plan import generate_action_plan
 
 logger = logging.getLogger("app.eval.adversarial")
 

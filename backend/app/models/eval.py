@@ -3,7 +3,9 @@ ChatEvent model: logs LLM path used for each compose call.
 Used by /api/eval/metrics to compute LLM path breakdown without hardcoded values.
 """
 from datetime import datetime
-from sqlalchemy import Column, DateTime, Integer, String, Float
+
+from sqlalchemy import Column, DateTime, Float, Integer, String
+
 from app.core.db import Base
 
 

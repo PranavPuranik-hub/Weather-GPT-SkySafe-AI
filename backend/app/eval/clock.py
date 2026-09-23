@@ -2,10 +2,10 @@
 SimClock: Thread-safe authoritative simulated clock for Lab scenario replay.
 Drives all three views (Chat, Command, SMS) via a single SSE stream.
 """
+import logging
 import threading
 import time
-import logging
-from typing import Optional, Callable
+from typing import Callable, Optional
 
 logger = logging.getLogger("app.eval.clock")
 

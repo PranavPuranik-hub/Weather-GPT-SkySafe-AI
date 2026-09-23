@@ -1,7 +1,7 @@
 """
 Unit tests for FactSheet builder and regex fact extraction.
 """
-from app.core.factsheet import FactSheet, Fact, build_factsheet, _extract_text_facts
+from app.core.factsheet import FactSheet, _extract_text_facts, build_factsheet
 
 
 def test_build_factsheet_basic():
@@ -29,7 +29,7 @@ def test_regex_fact_extraction():
         "Extremely heavy rainfall of 204 mm is likely."
     )
     extracted = _extract_text_facts(text, "CAP Description", "ALERT-123")
-    
+
     fields = [item["field"] for item in extracted]
     assert "wind_speed_kmh" in fields or "wind_gust_kmh" in fields
     assert "wave_height_m" in fields

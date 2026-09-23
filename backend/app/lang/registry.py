@@ -2,9 +2,9 @@
 Language Registry for SkySafe AI.
 Loads language configuration from languages.yaml.
 """
-import os
 from pathlib import Path
 from typing import Dict, List, Optional
+
 import yaml
 from pydantic import BaseModel, Field
 

@@ -3,11 +3,13 @@ Eval metrics: all values derived from DB queries. No hardcoded numbers.
 """
 import statistics
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any, Dict
+
 from sqlalchemy.orm import Session
+
 from app.models import Alert
-from app.models.reports import Report, WardState, WardStateEnum
 from app.models.eval import ChatEvent
+from app.models.reports import Report, WardState, WardStateEnum
 
 
 def latency_stats(db: Session) -> Dict[str, Any]:

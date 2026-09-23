@@ -6,29 +6,27 @@ Grounding Validation, Audio Voice Note Synthesis, and Honest Outside-Data Handli
 import hashlib
 import logging
 import uuid
-from typing import Dict, Any, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from sqlalchemy.orm import Session
-from app.reports.service import submit_report, classify_report_category
 
+from app.chat.geocoding import SEEDED_LOCATIONS, resolve_location
 from app.chat.models import ChatRequest, ChatResponse, OnboardingRequest, OnboardingResponse
 from app.chat.router import classify_intent
-from app.chat.geocoding import resolve_location, SEEDED_LOCATIONS
 from app.chat.tools import (
     get_active_alerts,
+    get_climate_normals,
     get_forecast,
     get_marine,
-    get_climate_normals,
     nearest_shelter,
 )
-from app.lang.digits import to_target_digits
-from app.lang.registry import get_language
-from app.lang.translator import translation_service
-from app.core.factsheet import build_factsheet
 from app.core.action_plan import generate_action_plan
+from app.core.factsheet import build_factsheet
+from app.lang.digits import to_target_digits
+from app.lang.translator import translation_service
 from app.pipeline.composer import compose_message
+from app.reports.service import classify_report_category, submit_report
 from app.validator.engine import validate_payload
-from app.validator.models import ClaimLedger
 from app.voice import voice_synthesizer
 
 logger = logging.getLogger("app")
@@ -213,7 +211,7 @@ def handle_chat_message(req: ChatRequest, db: Session = None) -> ChatResponse:
                 user_hash=user_hash,
                 ward_id=ward_id
             )
-        
+
         if category == "Need Help":
             if lang == "hi":
                 msg = f"आपकी आपातकालीन सहायता का अनुरोध {loc['district']} अधिकारियों को प्राथमिकता पर भेज दिया गया है। निकटतम आश्रय और बचाव टीम सतर्क हैं। हेल्पलाइन 1077 डायल करें।"

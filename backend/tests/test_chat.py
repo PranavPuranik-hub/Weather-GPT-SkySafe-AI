@@ -7,12 +7,13 @@ Verifies:
 4. Onboarding flow with hashed phone storage.
 5. Dev panel alert simulation with <60s delivery latency timer.
 """
-import pytest
 from datetime import datetime, timedelta
+
+import pytest
 from fastapi.testclient import TestClient
 
+from app.core.db import Base, SessionLocal, engine
 from app.main import app
-from app.core.db import Base, engine, SessionLocal
 from app.models import Alert
 
 client = TestClient(app)

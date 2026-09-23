@@ -6,21 +6,22 @@ Tests for Prompt 10: Lab + Evaluation
 - Source outage toggle
 - Evidence report endpoint
 """
-import pytest
 import json
+
+import pytest
+from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from fastapi.testclient import TestClient
 
 from app.core.db import Base
-from app.models.eval import ChatEvent
-from app.models import Alert
-from app.eval.clock import SimClock, SCENARIOS
-from app.eval.outage import set_outage, is_outage_enabled
 from app.eval.adversarial import run_adversarial_check
-from app.eval.metrics import get_all_metrics, llm_path_breakdown, alert_counts
+from app.eval.clock import SimClock
+from app.eval.metrics import alert_counts, get_all_metrics, llm_path_breakdown
+from app.eval.outage import is_outage_enabled, set_outage
 from app.llm.misbehaving_client import MisbehavingLLMClient
 from app.main import app
+from app.models import Alert
+from app.models.eval import ChatEvent
 
 client = TestClient(app)
 

@@ -1,11 +1,13 @@
 """
 Integration tests for compose API.
 """
-from fastapi.testclient import TestClient
-from app.main import app
-from app.core.db import Base, engine, SessionLocal
-from app.models import Alert
 from datetime import datetime
+
+from fastapi.testclient import TestClient
+
+from app.core.db import Base, SessionLocal, engine
+from app.main import app
+from app.models import Alert
 
 client = TestClient(app)
 
@@ -38,14 +40,14 @@ def test_compose_endpoint_fallback():
         "persona": "general",
         "lang": "en"
     })
-    
+
     assert resp.status_code == 200
     data = resp.json()
     assert "text" in data
     assert "voice_script" in data
     assert "claim_ledger" in data
     assert "path_used" in data
-    
+
     # Wait, Template fallback should work
     if data["claim_ledger"]["status"] != "PASS":
         print(data["claim_ledger"])

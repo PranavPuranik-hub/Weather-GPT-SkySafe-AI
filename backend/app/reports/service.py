@@ -1,16 +1,14 @@
 """
 Reports package: Automated bulletin & Situation Report (SitRep) generator, and Citizen Report clustering.
 """
-import asyncio
+import queue
 import re
 from datetime import datetime, timedelta
-from typing import Dict, Any, List
+from typing import List
 
 from sqlalchemy.orm import Session
 
 from app.models.reports import Report, WardState, WardStateEnum
-
-import queue
 
 # SSE Broadcaster Queues
 # We store a list of thread-safe Queues. Each connected client gets a queue.
@@ -38,7 +36,7 @@ def classify_report_category(text: str) -> str:
     Classifications: 'Water Logging', 'Tree Down', 'Road Blocked', 'Power Outage', 'Need Help', 'Safe', 'Other'
     """
     t = text.lower()
-    
+
     if re.search(r'\b(help|rescue|boat|stuck|save|emergency|trapped)\b', t):
         return "Need Help"
     if re.search(r'\b(safe|okay|fine|survived)\b', t):
@@ -51,7 +49,7 @@ def classify_report_category(text: str) -> str:
         return "Road Blocked"
     if re.search(r'\b(power|electricity|outage|dark|wire|cut)\b', t):
         return "Power Outage"
-        
+
     return "Other"
 
 
@@ -60,7 +58,7 @@ def submit_report(db: Session, text: str, lat: float, lon: float, user_hash: str
     Submit a citizen report and trigger clustering verification.
     """
     category = classify_report_category(text)
-    
+
     # Check for Spam / Rate Limiting (same user in same ward in last 30 mins)
     thirty_mins_ago = datetime.utcnow() - timedelta(minutes=30)
     existing_reports = db.query(Report).filter(
@@ -68,11 +66,11 @@ def submit_report(db: Session, text: str, lat: float, lon: float, user_hash: str
         Report.ward_id == ward_id,
         Report.timestamp >= thirty_mins_ago
     ).all()
-    
+
     confidence = "Unverified"
     if existing_reports:
         confidence = "Spam"
-        
+
     # Ensure WardState exists
     ws = db.query(WardState).filter(WardState.ward_id == ward_id).first()
     if not ws:
@@ -80,7 +78,7 @@ def submit_report(db: Session, text: str, lat: float, lon: float, user_hash: str
         db.add(ws)
         db.commit()
         db.refresh(ws)
-        
+
     report = Report(
         text=text,
         category=category,
@@ -94,11 +92,11 @@ def submit_report(db: Session, text: str, lat: float, lon: float, user_hash: str
     db.add(report)
     db.commit()
     db.refresh(report)
-    
+
     if confidence != "Spam":
         # Process clustering
         process_clustering(db, ward_id)
-        
+
     return report
 
 
@@ -109,23 +107,23 @@ def process_clustering(db: Session, ward_id: str):
     3+ independent reports = Confirmed
     """
     thirty_mins_ago = datetime.utcnow() - timedelta(minutes=30)
-    
+
     # Count unique non-spam reporters in this ward in the last 30 minutes
     valid_reports = db.query(Report).filter(
         Report.ward_id == ward_id,
         Report.confidence != "Spam",
         Report.timestamp >= thirty_mins_ago
     ).all()
-    
+
     unique_reporters = set(r.reporter_hash for r in valid_reports)
     count = len(unique_reporters)
-    
+
     ws = db.query(WardState).filter(WardState.ward_id == ward_id).first()
     if not ws:
         return
-        
+
     old_state = ws.state
-    
+
     if count >= 3:
         ws.state = WardStateEnum.CONFIRMED.value
         ws.ground_truth_score = min(ws.ground_truth_score + 0.1, 5.0)
@@ -136,11 +134,11 @@ def process_clustering(db: Session, ward_id: str):
     elif count >= 1:
         if ws.state == WardStateEnum.PREDICTED.value:
             ws.state = WardStateEnum.REPORTED.value
-            
+
     ws.last_updated = datetime.utcnow()
     db.commit()
     db.refresh(ws)
-    
+
     # Trigger SSE broadcast if state changed or if explicitly we just want to push update
     if old_state != ws.state or count >= 3:
         broadcast_ward_state(ws)

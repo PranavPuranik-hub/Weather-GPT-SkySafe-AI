@@ -7,11 +7,10 @@ from typing import Any
 from sqlalchemy import Boolean, Column, DateTime, Float, Integer, String, Text
 
 from app.core.db import Base
-
-
-from app.models.reports import Report, WardState, WardStateEnum
-from app.models.decision import WardInfo, Depot, Resource, Shelter, Decision
+from app.models.decision import Decision, Depot, Resource, Shelter, WardInfo
 from app.models.eval import ChatEvent
+from app.models.reports import Report, WardState, WardStateEnum
+
 
 class Alert(Base):
     """

@@ -2,11 +2,12 @@
 Deterministic Grounding Engine for validating LLM outputs.
 """
 import re
-from typing import Dict, List, Any
+from typing import Any, Dict, List
 
-from app.validator.models import FactCheck, SentenceValidation, ClaimLedger
-from app.validator.normalizer import normalize_text_for_numbers
 from app.validator.extractor import extract_numeric_tokens, extract_time_tokens
+from app.validator.models import ClaimLedger, FactCheck, SentenceValidation
+from app.validator.normalizer import normalize_text_for_numbers
+
 
 def extract_all_numeric_info(text: str) -> List[str]:
     norm = normalize_text_for_numbers(text)
@@ -26,22 +27,22 @@ def fuzzy_match_number(token: str, fact_value: str) -> bool:
     """Check if token matches fact_value, accounting for rounding/units."""
     token = token.lower()
     fact_value = str(fact_value).lower()
-    
+
     # Direct match
     if token == fact_value or token in fact_value or fact_value in token:
         return True
-        
+
     # Numeric match
     token_match = re.search(r'(\d+(?:\.\d+)?)', token)
     fact_match = re.search(r'(\d+(?:\.\d+)?)', fact_value)
-    
+
     if token_match and fact_match:
         t_val = float(token_match.group(1))
         f_val = float(fact_match.group(1))
-        
+
         if abs(t_val - f_val) < 0.1:
             return True
-            
+
         # Try unit conversions if units are present
         if 'kmh' in fact_value and 'knot' in token:
             if abs(convert_units(f_val, 'kmh', 'knots') - t_val) < 1.0:
@@ -49,7 +50,7 @@ def fuzzy_match_number(token: str, fact_value: str) -> bool:
         if 'knot' in fact_value and 'kmh' in token:
             if abs(convert_units(f_val, 'knots', 'kmh') - t_val) < 1.0:
                 return True
-                
+
     return False
 
 def check_negations(text: str, action_text: str, lang: str = "en") -> bool:
@@ -60,11 +61,11 @@ def check_negations(text: str, action_text: str, lang: str = "en") -> bool:
     negations = ["not", "no", "never", "don't", "do not", "avoid"]
     action_lower = action_text.lower()
     text_lower = text.lower()
-    
+
     action_has_negation = any(re.search(rf'\b{neg}\b', action_lower) for neg in negations)
     if not action_has_negation:
         return True
-        
+
     if lang == "en":
         for neg in negations:
             if re.search(rf'\b{neg}\b', text_lower):
@@ -94,22 +95,22 @@ def validate_sentence(
     actionplan: Dict[str, Any],
     lang: str = "en"
 ) -> SentenceValidation:
-    
+
     token_checks = []
     status = "PASS"
     reason = None
-    
+
     # 1. Extract numbers and times (normalizes Indic numerals across all scripts)
     tokens = extract_all_numeric_info(text)
-    
+
     # Resolve facts
     facts_map = {f['id']: f['value'] for f in factsheet.get('facts', [])}
     allowed_fact_values = [facts_map[fid] for fid in declared_fact_ids if fid in facts_map]
     all_fact_values = list(facts_map.values())
-    
+
     # Resolve actions
     ap_map = {a['id']: a.get('action', a.get('instruction', '')) for a in actionplan.get('ordered_actions', [])}
-    
+
     for token in tokens:
         # Does the token match any declared fact?
         matched_fid = None
@@ -117,7 +118,7 @@ def validate_sentence(
             if fid in facts_map and fuzzy_match_number(token, facts_map[fid]):
                 matched_fid = fid
                 break
-                
+
         if matched_fid:
             token_checks.append(FactCheck(token=token, fact_id=matched_fid, status="PASS"))
         elif any(fuzzy_match_number(token, ap_map.get(aid, '')) for aid in declared_action_ids):
@@ -130,20 +131,20 @@ def validate_sentence(
                 if fuzzy_match_number(token, fval):
                     matched_undeclared = fid
                     break
-            
+
             if matched_undeclared:
                 token_checks.append(FactCheck(
-                    token=token, 
-                    fact_id=matched_undeclared, 
-                    status="FAIL", 
+                    token=token,
+                    fact_id=matched_undeclared,
+                    status="FAIL",
                     reason=f"Matches fact {matched_undeclared} but it was not declared in fact_ids"
                 ))
                 status = "FAIL"
                 reason = "Undeclared fact usage"
             else:
                 token_checks.append(FactCheck(
-                    token=token, 
-                    status="FAIL", 
+                    token=token,
+                    status="FAIL",
                     reason="Hallucinated numeric token/time not found in any facts"
                 ))
                 status = "FAIL"
@@ -163,7 +164,7 @@ def validate_sentence(
                     status = "FAIL"
                     reason = f"Dropped critical negation for action {aid}"
                     break
-                
+
                 # Check keyword overlap
                 if lang == "en":
                     action_words = set(re.findall(r'\b\w{4,}\b', action_text.lower()))
@@ -183,12 +184,12 @@ def validate_sentence(
                             status = "FAIL"
                             reason = f"Action {aid} translation lacks keywords from target template."
                             break
-    
+
     # Ensure sentence declares something
     if not declared_fact_ids and not declared_action_ids:
         status = "FAIL"
         reason = "Sentence declares no facts or actions (invented content)."
-        
+
     # 3. Check for fake locations/helplines
     for token in tokens:
         digits = re.sub(r'\D', '', token)
@@ -196,7 +197,7 @@ def validate_sentence(
             if not any(digits in str(fval) for fval in all_fact_values):
                 status = "FAIL"
                 reason = "Hallucinated helpline/phone number"
-                
+
     # Place names - Extract proper nouns / check against fake places
     fake_places = [
         "Mumbai", "Delhi", "Unknown", "Atlantis", "Chennai", "Kolkata", "Bengaluru", "London", "Paris", "Washington", "FakeCity", "New York",
@@ -269,51 +270,51 @@ def validate_payload(
     actionplan: Dict[str, Any],
     lang: str = "en"
 ) -> ClaimLedger:
-    
+
     text_sentences = payload.get("text_script_sentences", [])
     voice_sentences = payload.get("voice_script_sentences", [])
-    
+
     text_vals = []
     for i, s in enumerate(text_sentences):
         text_vals.append(validate_sentence(
-            i, 
-            s.get("text", ""), 
-            s.get("fact_ids", []), 
-            s.get("action_ids", []), 
-            factsheet, 
+            i,
+            s.get("text", ""),
+            s.get("fact_ids", []),
+            s.get("action_ids", []),
+            factsheet,
             actionplan,
             lang=lang
         ))
-        
+
     voice_vals = []
     for i, s in enumerate(voice_sentences):
         voice_vals.append(validate_sentence(
-            i, 
-            s.get("text", ""), 
-            s.get("fact_ids", []), 
-            s.get("action_ids", []), 
-            factsheet, 
+            i,
+            s.get("text", ""),
+            s.get("fact_ids", []),
+            s.get("action_ids", []),
+            factsheet,
             actionplan,
             lang=lang
         ))
-        
+
     global_status = "PASS"
     global_reason = None
-    
+
     if any(v.status == "FAIL" for v in text_vals + voice_vals):
         global_status = "FAIL"
-        
+
     # Check word count constraints
     text_words = sum(len(s.get("text", "").split()) for s in text_sentences)
     voice_words = sum(len(s.get("text", "").split()) for s in voice_sentences)
-    
+
     if text_words > 60:
         global_status = "FAIL"
         global_reason = f"Text script exceeds 60 words ({text_words})"
     if voice_words > 45:
         global_status = "FAIL"
         global_reason = f"Voice script exceeds 45 words ({voice_words})"
-        
+
     return ClaimLedger(
         alert_id=alert_id,
         status=global_status,

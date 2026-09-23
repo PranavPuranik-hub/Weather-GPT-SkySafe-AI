@@ -46,7 +46,7 @@ NUMBER_WORDS_MAP = {
     "ten": "10", "eleven": "11", "twelve": "12", "twenty": "20",
     "thirty": "30", "forty": "40", "fifty": "50", "sixty": "60",
     "seventy": "70", "eighty": "80", "ninety": "90", "hundred": "100",
-    
+
     # Hindi
     "शून्य": "0", "एक": "1", "दो": "2", "तीन": "3", "चार": "4",
     "पांच": "5", "छह": "6", "छः": "6", "सात": "7", "आठ": "8", "नौ": "9",
@@ -66,7 +66,7 @@ def normalize_number_words(text: str) -> str:
     """
     words = text.split()
     normalized_words = []
-    
+
     for word in words:
         clean_word = re.sub(r'[^\w\s]', '', word).lower()
         if clean_word in NUMBER_WORDS_MAP:
@@ -75,7 +75,7 @@ def normalize_number_words(text: str) -> str:
             # Replace the word with the digit, keeping punctuation
             word = re.sub(r'(?i)\b' + re.escape(clean_word) + r'\b', val, word)
         normalized_words.append(word)
-        
+
     return " ".join(normalized_words)
 
 def normalize_text_for_numbers(text: str) -> str:

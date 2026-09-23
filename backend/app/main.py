@@ -10,22 +10,27 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api import (
     admin_router,
     alerts_router,
-    health_router,
-    compose_router,
-    voice_router,
-    languages_router,
     chat_router,
+    compose_router,
+    health_router,
+    languages_router,
+    voice_router,
 )
-from app.api.reports import router as reports_router
 from app.api.decision import router as decision_router
-from app.api.sms import router as sms_router
 from app.api.eval import router as eval_router
+from app.api.reports import router as reports_router
+from app.api.sms import router as sms_router
 from app.core.config import settings
 from app.core.db import Base, engine
 from app.ingest.scheduler import start_ingest_scheduler, stop_ingest_scheduler
 from app.ingest.service import ingest_service
 
 logger = logging.getLogger("app")
+
+# Install PII-redacting log filter at startup
+from app.core.security import install_pii_filter
+
+install_pii_filter()
 
 
 @asynccontextmanager
@@ -53,13 +58,16 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS Middleware configuration (OWASP security compliance)
+# CORS Middleware — restrict origins in production via ALLOWED_ORIGINS env var
+import os
+
+_allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:3001").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Restrict in production environment
+    allow_origins=_allowed_origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization", "X-Request-ID"],
 )
 
 # Register API Routers

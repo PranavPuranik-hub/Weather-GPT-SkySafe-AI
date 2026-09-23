@@ -2,9 +2,9 @@
 Unit tests for RuleEngine verifying YAML rules across all hazards, grades, and personas.
 """
 import pytest
-from app.core.factsheet import FactSheet, build_factsheet
-from app.core.rule_engine import RuleEngine, normalize_hazard, rule_engine
 
+from app.core.factsheet import build_factsheet
+from app.core.rule_engine import normalize_hazard, rule_engine
 
 HAZARDS = [
     "cyclone",

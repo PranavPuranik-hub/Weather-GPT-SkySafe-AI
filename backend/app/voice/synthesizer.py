@@ -8,15 +8,14 @@ import hashlib
 import json
 import logging
 import os
-import urllib.request
 import urllib.error
+import urllib.request
 from pathlib import Path
-from typing import Dict, Any, Optional, Tuple
+from typing import Any, Dict, Optional
 
 import edge_tts
 from gtts import gTTS
 
-from app.lang.registry import get_language
 from app.voice.chime import generate_emergency_chime
 
 logger = logging.getLogger("app")

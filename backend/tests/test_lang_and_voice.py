@@ -7,25 +7,25 @@ Verifies:
 4. Voice API endpoints (POST /api/voice, GET /api/voice/audio, GET /api/languages).
 5. SMS budgeting (<= 160 chars GSM-7; <= 3 Unicode segments).
 """
-import pytest
 from datetime import datetime
+
+import pytest
 from fastapi.testclient import TestClient
 
-from app.main import app
-from app.core.db import Base, engine, SessionLocal
-from app.models import Alert
-from app.core.factsheet import build_factsheet
 from app.core.action_plan import generate_action_plan
-from app.pipeline.composer import compose_message
+from app.core.db import Base, SessionLocal, engine
+from app.core.factsheet import build_factsheet
 from app.lang import (
-    get_all_languages,
-    get_verified_languages,
-    get_language,
-    to_target_digits,
-    format_emergency_sms,
     calculate_sms_segments,
+    format_emergency_sms,
+    get_all_languages,
+    get_language,
+    get_verified_languages,
     translation_service,
 )
+from app.main import app
+from app.models import Alert
+from app.pipeline.composer import compose_message
 from app.validator.engine import validate_payload
 from app.voice import voice_synthesizer
 

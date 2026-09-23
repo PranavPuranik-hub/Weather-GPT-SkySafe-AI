@@ -1,9 +1,10 @@
-import math
-from typing import Dict, Any, Tuple, List
+from typing import Any, Dict, List, Tuple
+
 from sqlalchemy.orm import Session
-from app.models.decision import WardInfo, Shelter
-from app.models.reports import WardState, WardStateEnum
+
 from app.models import Alert
+from app.models.decision import Shelter, WardInfo
+from app.models.reports import WardState
 
 # Default Config Weights
 WEIGHTS = {
@@ -21,7 +22,7 @@ def calculate_ward_risk_score(db: Session, ward_info: WardInfo) -> Tuple[float, 
     Calculates a 0-100 risk score and returns a ledger of the top contributing factors.
     """
     factors = []
-    
+
     # 1. Alert Severity (0 to 1)
     # Get active alert for district
     alert = db.query(Alert).filter(Alert.is_expired == False).first()
@@ -32,8 +33,8 @@ def calculate_ward_risk_score(db: Session, ward_info: WardInfo) -> Tuple[float, 
         elif alert.severity.lower() == "moderate": severity_val = 0.5
         elif alert.severity.lower() == "minor": severity_val = 0.2
         factors.append({
-            "factor": "Alert Severity", 
-            "value": alert.severity, 
+            "factor": "Alert Severity",
+            "value": alert.severity,
             "score": severity_val * 100 * WEIGHTS["alert_severity"],
             "source": f"SACHET Alert: {alert.identifier}"
         })
@@ -41,8 +42,8 @@ def calculate_ward_risk_score(db: Session, ward_info: WardInfo) -> Tuple[float, 
     # 2. Low Lying Score (0 to 1)
     low_lying = ward_info.low_lying_score
     factors.append({
-        "factor": "Low Lying Area", 
-        "value": f"{low_lying*100}%", 
+        "factor": "Low Lying Area",
+        "value": f"{low_lying*100}%",
         "score": low_lying * 100 * WEIGHTS["low_lying"],
         "source": "Ward Demographics DB"
     })
@@ -50,8 +51,8 @@ def calculate_ward_risk_score(db: Session, ward_info: WardInfo) -> Tuple[float, 
     # 3. Population Density Proxy (0 to 1) (Normalize by 50,000 max pop)
     pop_norm = min(ward_info.population / 50000.0, 1.0)
     factors.append({
-        "factor": "Population", 
-        "value": str(ward_info.population), 
+        "factor": "Population",
+        "value": str(ward_info.population),
         "score": pop_norm * 100 * WEIGHTS["population_density"],
         "source": "Census DB"
     })
@@ -59,8 +60,8 @@ def calculate_ward_risk_score(db: Session, ward_info: WardInfo) -> Tuple[float, 
     # 4. Vulnerability (Elderly + Kutcha) (0 to 1)
     vuln = min(ward_info.elderly_share + ward_info.kutcha_house_share, 1.0)
     factors.append({
-        "factor": "Vulnerability (Elderly + Kutcha)", 
-        "value": f"{(vuln*100):.1f}%", 
+        "factor": "Vulnerability (Elderly + Kutcha)",
+        "value": f"{(vuln*100):.1f}%",
         "score": vuln * 100 * WEIGHTS["vulnerability"],
         "source": "Demographics Survey"
     })
@@ -68,8 +69,8 @@ def calculate_ward_risk_score(db: Session, ward_info: WardInfo) -> Tuple[float, 
     # 5. Hospital Distance (0 to 1) (Normalize by 20km max)
     hosp_norm = min(ward_info.hospital_distance_km / 20.0, 1.0)
     factors.append({
-        "factor": "Hospital Distance", 
-        "value": f"{ward_info.hospital_distance_km} km", 
+        "factor": "Hospital Distance",
+        "value": f"{ward_info.hospital_distance_km} km",
         "score": hosp_norm * 100 * WEIGHTS["hospital_distance"],
         "source": "Health Infra Registry"
     })
@@ -80,10 +81,10 @@ def calculate_ward_risk_score(db: Session, ward_info: WardInfo) -> Tuple[float, 
     if ws:
         # ground_truth_score starts at 1.0. Max 5.0. Normalize (x - 1.0) / 4.0
         reports_score = min((ws.ground_truth_score - 1.0) / 4.0, 1.0)
-    
+
     reports_val_str = f"Score {ws.ground_truth_score:.1f}" if ws else "None"
     factors.append({
-        "factor": "Confirmed Citizen Reports", 
+        "factor": "Confirmed Citizen Reports",
         "value": reports_val_str,
         "score": reports_score * 100 * WEIGHTS["citizen_reports"],
         "source": "Citizen Reporting Cluster Engine"
@@ -94,22 +95,22 @@ def calculate_ward_risk_score(db: Session, ward_info: WardInfo) -> Tuple[float, 
     total_cap = sum(s.capacity for s in shelters)
     total_occ = sum(s.current_occupancy for s in shelters)
     available = total_cap - total_occ
-    
+
     # Needs vs Available (Assume 10% of pop needs shelter in extreme event)
     needs = ward_info.population * 0.10
     gap = max(needs - available, 0)
     gap_norm = min(gap / needs if needs > 0 else 0, 1.0)
-    
+
     factors.append({
-        "factor": "Shelter Capacity Gap", 
-        "value": f"{int(gap)} beds short", 
+        "factor": "Shelter Capacity Gap",
+        "value": f"{int(gap)} beds short",
         "score": gap_norm * 100 * WEIGHTS["shelter_gap"],
         "source": "Real-time Shelter DB"
     })
 
     # Total Score
     total_score = sum(f["score"] for f in factors)
-    
+
     # Sort factors by contribution
     factors.sort(key=lambda x: x["score"], reverse=True)
 

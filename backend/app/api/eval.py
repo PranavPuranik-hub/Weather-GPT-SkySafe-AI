@@ -10,8 +10,6 @@ import asyncio
 import json
 import logging
 import string
-from datetime import datetime
-from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import HTMLResponse, StreamingResponse
@@ -19,10 +17,10 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.core.db import get_db
-from app.eval.clock import sim_clock, SCENARIOS
-from app.eval.metrics import get_all_metrics
 from app.eval.adversarial import run_adversarial_check
-from app.eval.outage import set_outage, is_outage_enabled
+from app.eval.clock import SCENARIOS, sim_clock
+from app.eval.metrics import get_all_metrics
+from app.eval.outage import is_outage_enabled, set_outage
 
 logger = logging.getLogger("app.api.eval")
 router = APIRouter(prefix="/api/eval", tags=["Lab / Eval"])

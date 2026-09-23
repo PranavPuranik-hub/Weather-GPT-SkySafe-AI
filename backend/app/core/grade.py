@@ -4,7 +4,6 @@ Deterministically evaluated threat grade result with mandatory safety check flag
 from dataclasses import dataclass
 from typing import Literal, Optional
 
-
 GradeType = Literal["A", "B", "C", "D"]
 ColorCodeType = Literal["Red", "Orange", "Yellow", "Green"]
 

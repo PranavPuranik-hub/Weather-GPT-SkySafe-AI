@@ -1,11 +1,11 @@
-from datetime import datetime
-from typing import Any, Optional
-
-from sqlalchemy import Column, DateTime, Float, Integer, String, Text, ForeignKey, Enum
-from sqlalchemy.orm import relationship
 import enum
+from datetime import datetime
+
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy.orm import relationship
 
 from app.core.db import Base
+
 
 class WardStateEnum(str, enum.Enum):
     PREDICTED = "Predicted"

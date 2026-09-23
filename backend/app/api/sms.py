@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
-from sqlalchemy.orm import Session
-from app.core.db import get_db
-from app.sms.parser import parse_sms_reply
-from app.sms.encoder import generate_sms
-from app.sms.twilio_adapter import send_twilio_message
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
-from typing import Optional
+from sqlalchemy.orm import Session
+
+from app.core.db import get_db
+from app.sms.encoder import generate_sms
+from app.sms.parser import parse_sms_reply
+from app.sms.twilio_adapter import send_twilio_message
 
 router = APIRouter(prefix="/api/sms", tags=["SMS Fallback"])
 
@@ -22,7 +22,7 @@ def sms_webhook(payload: SMSWebhookPayload, db: Session = Depends(get_db)):
     category = parse_sms_reply(payload.Body, payload.From, payload.WardId, db)
     if not category:
         return {"status": "ignored", "reason": "unparseable"}
-        
+
     return {"status": "success", "category": category}
 
 class SMSOutboundPayload(BaseModel):

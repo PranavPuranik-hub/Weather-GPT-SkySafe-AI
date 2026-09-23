@@ -3,9 +3,9 @@ CLI Demo Executable: Simulates timeline steps for a disaster scenario and prints
 Usage: python -m app.core.demo --scenario cyclone
 """
 import argparse
-import json
 import sys
 from datetime import datetime, timedelta, timezone
+
 from app.core.action_plan import generate_action_plan
 from app.core.factsheet import build_factsheet
 
@@ -20,10 +20,10 @@ def run_demo(scenario: str = "cyclone") -> None:
         except Exception:
             pass
 
-    print(f"\n==========================================================================")
-    print(f"[DEMO] SKYSAFE AI - DISASTER ACTION INTELLIGENCE CLI DEMO (ZERO-LLM)")
+    print("\n==========================================================================")
+    print("[DEMO] SKYSAFE AI - DISASTER ACTION INTELLIGENCE CLI DEMO (ZERO-LLM)")
     print(f"[*] Scenario: {scenario.upper()} DRILL")
-    print(f"==========================================================================")
+    print("==========================================================================")
 
     now = datetime.now(timezone.utc)
     personas = ["general", "farmer", "fisherman", "elderly_alone", "pregnant_infants"]
@@ -141,27 +141,27 @@ def run_demo(scenario: str = "cyclone") -> None:
 
         factsheet = build_factsheet(alert, open_meteo_data=open_meteo)
 
-        print(f"\n--------------------------------------------------------------------------")
+        print("\n--------------------------------------------------------------------------")
         print(f"[STEP] TIMELINE STEP: {step_name.upper()}")
-        print(f"--------------------------------------------------------------------------")
-        print(f"[FACTS] Headline Facts extracted for grounding:")
+        print("--------------------------------------------------------------------------")
+        print("[FACTS] Headline Facts extracted for grounding:")
         for f in factsheet.facts[:5]:
             print(f"   [{f.id}] {f.field}: {f.value} (source: {f.source})")
 
-        print(f"\n[ACTION PLANS] GENERATED ACTION PLANS PER PERSONA:")
+        print("\n[ACTION PLANS] GENERATED ACTION PLANS PER PERSONA:")
 
         for persona in personas:
             plan = generate_action_plan(factsheet, persona=persona, hazard_override=scenario.lower())
-            
+
             check_badge = " [SAFETY CHECK REQUIRED]" if plan.safety_check_required else ""
             print(f"\n   -> Persona: {persona.upper()} | Grade: {plan.grade}{check_badge}")
             print(f"      Why (Fact IDs): {plan.why}")
             for idx, act in enumerate(plan.ordered_actions, 1):
                 print(f"      {idx}. [{act['id']}] {act['action']}")
 
-    print(f"\n==========================================================================")
-    print(f"[OK] Demo execution completed cleanly.")
-    print(f"==========================================================================\n")
+    print("\n==========================================================================")
+    print("[OK] Demo execution completed cleanly.")
+    print("==========================================================================\n")
 
 
 def main() -> None:

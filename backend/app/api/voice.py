@@ -2,21 +2,20 @@
 Voice and Audio Notes API Router.
 Endpoints for synthesizing voice notes, serving audio files, and checking languages.
 """
-from pathlib import Path
-from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
-from app.core.db import SessionLocal
-from app.models import Alert
-from app.core.factsheet import build_factsheet
 from app.core.action_plan import generate_action_plan
-from app.pipeline.composer import compose_message
+from app.core.db import SessionLocal
+from app.core.factsheet import build_factsheet
+from app.lang.registry import get_all_languages, get_verified_languages
+from app.lang.sms import calculate_sms_segments, format_emergency_sms
 from app.lang.translator import translation_service
-from app.lang.sms import format_emergency_sms, calculate_sms_segments
-from app.lang.registry import get_verified_languages, get_all_languages, get_language
+from app.models import Alert
+from app.pipeline.composer import compose_message
 from app.voice.models import VoiceRequest, VoiceResponse
-from app.voice.synthesizer import voice_synthesizer, AUDIO_CACHE_DIR
+from app.voice.synthesizer import AUDIO_CACHE_DIR, voice_synthesizer
 
 voice_router = APIRouter(prefix="/api/voice", tags=["voice"])
 languages_router = APIRouter(prefix="/api/languages", tags=["languages"])

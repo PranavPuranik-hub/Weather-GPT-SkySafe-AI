@@ -3,11 +3,9 @@ Adversarial test suite for Grounding Validator.
 Ensures zero hallucinations pass through the validation engine.
 """
 import pytest
-from app.validator.engine import validate_payload
-from app.core.factsheet import FactSheet, Fact
-from app.core.action_plan import ActionPlan
+
 # Single canonical definition of the adversarial LLM — do NOT redefine here
-from app.llm.misbehaving_client import MisbehavingLLMClient
+from app.validator.engine import validate_payload
 
 # Dummy data
 FACTSHEET_DATA = {
@@ -81,7 +79,7 @@ for neg in ["Go out to sea", "You must go out to sea", "Proceed out to sea"]:
     adversarial_cases.append((neg, [], ["a1"]))
 for i_action in ["Call the police", "Hide under the bed", "Wait for the president"]:
     adversarial_cases.append((i_action, [], []))
-    
+
 # Valid cases for baseline
 valid_cases = [
     ("Cyclone wind speed is 120 kmh.", ["F1", "F2"], []),

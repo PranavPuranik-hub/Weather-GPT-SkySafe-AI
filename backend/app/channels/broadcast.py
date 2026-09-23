@@ -4,16 +4,16 @@ Handles multi-channel emergency broadcast dispatch (Cell Broadcast / CAP / Whats
 generates persona-specific grounded action plans, executes multilingual translation,
 synthesizes real voice notes, and tracks end-to-end delivery latency (<60s SLA).
 """
-import time
 import logging
+import time
 from datetime import datetime, timezone
-from typing import Dict, Any, Optional
+from typing import Any, Dict
 
-from app.models import Alert
-from app.core.factsheet import build_factsheet
 from app.core.action_plan import generate_action_plan
-from app.pipeline.composer import compose_message
+from app.core.factsheet import build_factsheet
 from app.lang.translator import translation_service
+from app.models import Alert
+from app.pipeline.composer import compose_message
 from app.voice.synthesizer import voice_synthesizer
 
 logger = logging.getLogger("app.channels.broadcast")

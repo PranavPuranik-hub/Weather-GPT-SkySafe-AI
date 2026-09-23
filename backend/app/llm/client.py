@@ -9,7 +9,7 @@ class LLMClient(ABC):
     """
     Abstract base class for all LLM providers.
     """
-    
+
     @abstractmethod
     def generate(self, system_prompt: str, user_prompt: str, json_schema: Dict[str, Any]) -> str:
         """

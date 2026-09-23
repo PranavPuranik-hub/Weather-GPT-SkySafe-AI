@@ -75,7 +75,7 @@ def _extract_text_facts(text: str, source_label: str, source_ref: Optional[str])
 
         is_gust = "gust" in match.group(0).lower()
         field_name = "wind_gust_kmh" if is_gust else "wind_speed_kmh"
-        
+
         extracted.append({
             "field": field_name,
             "value": max_val,
@@ -157,11 +157,11 @@ def build_factsheet(
     severity = _get(alert, "severity") or "Moderate"
     urgency = _get(alert, "urgency") or "Expected"
     certainty = _get(alert, "certainty") or "Observed"
-    
+
     district = _get(alert, "district")
     state = _get(alert, "state")
     area_desc = _get(alert, "area_desc") or f"{district or ''}, {state or ''}".strip(", ")
-    
+
     area_name = ward_village or area_desc or district or "Affected Zone"
 
     raw_facts.append({"field": "event", "value": str(event), "source": "CAP Alert info.event", "source_ref": source_ref})

@@ -7,7 +7,7 @@ import logging
 import re
 import urllib.parse
 import urllib.request
-from typing import Dict, Any, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 logger = logging.getLogger("app")
 

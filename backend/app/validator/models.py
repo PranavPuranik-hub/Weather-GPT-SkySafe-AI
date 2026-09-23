@@ -2,7 +2,9 @@
 Models for the Grounding Validator.
 """
 from typing import List, Optional
+
 from pydantic import BaseModel
+
 
 class FactCheck(BaseModel):
     token: str
@@ -25,7 +27,7 @@ class ClaimLedger(BaseModel):
     text_validations: List[SentenceValidation]
     voice_validations: List[SentenceValidation]
     global_reason: Optional[str] = None
-    
+
     def get_violations_text(self) -> str:
         violations = []
         for v in self.text_validations + self.voice_validations:
