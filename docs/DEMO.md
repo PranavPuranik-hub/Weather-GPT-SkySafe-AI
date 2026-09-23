@@ -218,3 +218,6 @@ curl http://localhost:8000/health
 # Evidence report
 curl http://localhost:8000/api/eval/report > evidence.html
 ```
+
+### Note on Weather Data Caching
+The Open-Meteo API integration uses a standard 15-minute in-memory TTL cache. This is an intentional design choice to prevent rate-limiting on free-tier APIs during the demo and in production. If you query the weather multiple times within 15 minutes, the Claim Ledger will show "Open-Meteo Forecast" but the data is served instantly from the local cache. If the live network fails entirely, it falls back to the stale cache, and finally to offline JSON fixtures.

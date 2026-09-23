@@ -8,6 +8,7 @@ from typing import Any, Dict, Optional
 
 from app.core.db import SessionLocal
 from app.ingest.open_meteo import open_meteo_client
+from app.ingest import fetch_open_meteo_forecast
 from app.models import Alert
 
 # Seeded official disaster shelters registry
@@ -167,7 +168,7 @@ def get_forecast(location: Dict[str, Any], days: int = 3) -> Dict[str, Any]:
     district = location.get("district", "Cuttack")
 
     try:
-        raw_fc = open_meteo_client.get_forecast(lat=lat, lon=lon)
+        raw_fc = fetch_open_meteo_forecast(lat, lon)
         daily = raw_fc.get("daily", {})
         hourly = raw_fc.get("hourly", {})
 
@@ -236,8 +237,8 @@ def get_marine(location: Dict[str, Any]) -> Dict[str, Any]:
     is_coastal = location.get("is_coastal", True)
 
     try:
-        marine_data = open_meteo_client.get_marine(lat=lat, lon=lon)
-        hourly = marine_data.get("hourly", {})
+        marine_data = open_meteo_client.get_marine(lat=lat, lon=lon).model_dump()
+        hourly = marine_data.get("hourly") or {}
         wave_heights = hourly.get("wave_height", [1.8])
         current_wave = wave_heights[0] if wave_heights else 1.8
 
